@@ -1,0 +1,20 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: GamerStoreBackEnd
+  datasource:
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    url: jdbc:mysql://${DB_URL}/defaultdb?sslMode=REQUIRED
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
