@@ -1,6 +1,7 @@
 package cl.maotech.gamerstoreback.controller;
 
 import cl.maotech.gamerstoreback.constant.UserEndpoints;
+import cl.maotech.gamerstoreback.dto.UserResponseDto;
 import cl.maotech.gamerstoreback.model.User;
 import cl.maotech.gamerstoreback.service.UserService;
 import jakarta.validation.Valid;
@@ -19,22 +20,22 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<UserResponseDto>> getUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping(UserEndpoints.ID)
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
     }
 
     @PutMapping(UserEndpoints.ID)
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(id, user));
     }
 

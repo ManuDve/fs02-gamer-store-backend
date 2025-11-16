@@ -1,50 +1,62 @@
 package cl.maotech.gamerstoreback.service;
 
 import cl.maotech.gamerstoreback.constant.Messages;
+import cl.maotech.gamerstoreback.dto.UserResponseDto;
 import cl.maotech.gamerstoreback.exception.DuplicateResourceException;
 import cl.maotech.gamerstoreback.exception.ResourceNotFoundException;
+import cl.maotech.gamerstoreback.mapper.UserMapper;
 import cl.maotech.gamerstoreback.model.User;
 import cl.maotech.gamerstoreback.repository.UserRespository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRespository userRespository;
 
-    public List<User> getAllUsers() {
-        return userRespository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        return userRespository.findAll().stream()
+                .map(UserMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public User getUserById(Long id) {
-        return userRespository.findById(id)
+    public UserResponseDto getUserById(Long id) {
+        User user = userRespository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.User.NOT_FOUND + id));
+        return UserMapper.toResponseDto(user);
     }
 
-    public User createUser(User user) {
+    public UserResponseDto createUser(User user) {
         if (userRespository.existsByEmail(user.getEmail())) {
             throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getEmail());
         }
-        return userRespository.save(user);
+        User savedUser = userRespository.save(user);
+        return UserMapper.toResponseDto(savedUser);
     }
 
-    public User updateUser(Long id, User user) {
-        User existingUser = getUserById(id);
+    public UserResponseDto updateUser(Long id, User user) {
+        User existingUser = userRespository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.User.NOT_FOUND + id));
 
         if (!existingUser.getEmail().equals(user.getEmail()) && userRespository.existsByEmail(user.getEmail())) {
             throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getEmail());
         }
 
+        existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
         existingUser.setPassword(user.getPassword());
-        return userRespository.save(existingUser);
+        existingUser.setPhone(user.getPhone());
+        User updatedUser = userRespository.save(existingUser);
+        return UserMapper.toResponseDto(updatedUser);
     }
 
     public void deleteUser(Long id) {
-        User user = getUserById(id);
+        User user = userRespository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.User.NOT_FOUND + id));
         userRespository.delete(user);
     }
 }

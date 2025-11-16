@@ -58,7 +58,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+							"raw": "{\n  \"name\": \"Juan Pérez\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+56912345678\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users",
@@ -85,7 +85,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"updated@example.com\",\n  \"password\": \"newpassword123\"\n}"
+							"raw": "{\n  \"name\": \"Juan Pérez Actualizado\",\n  \"email\": \"updated@example.com\",\n  \"password\": \"newpassword123\",\n  \"phone\": \"+56987654321\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users/1",

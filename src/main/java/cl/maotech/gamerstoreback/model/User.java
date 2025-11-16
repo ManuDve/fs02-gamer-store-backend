@@ -18,6 +18,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = Messages.User.NAME_REQUIRED)
+    @Column(nullable = false)
+    private String name;
+
     @NotBlank(message = Messages.User.EMAIL_REQUIRED)
     @Email(message = Messages.User.EMAIL_INVALID)
     @Column(nullable = false, unique = true)
@@ -26,4 +30,8 @@ public class User {
     @NotBlank(message = Messages.User.PASSWORD_REQUIRED)
     @Column(nullable = false)
     private String password;
+
+    @NotBlank(message = Messages.User.PHONE_REQUIRED)
+    @Column(nullable = false)
+    private String phone;
 }
