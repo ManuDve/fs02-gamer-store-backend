@@ -1,0 +1,11 @@
+spring:
+  security:
+    user:
+      name: admin
+      password: admin123
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: TRACE
+    org.springframework.security.web.FilterChainProxy: DEBUG

@@ -31,8 +31,8 @@ public class UserService {
     }
 
     public UserResponseDto createUser(User user) {
-        if (userRespository.existsByEmail(user.getEmail())) {
-            throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getEmail());
+        if (userRespository.existsByUsername(user.getUsername())) {
+            throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getUsername());
         }
         User savedUser = userRespository.save(user);
         return UserMapper.toResponseDto(savedUser);
@@ -42,12 +42,12 @@ public class UserService {
         User existingUser = userRespository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.User.NOT_FOUND + id));
 
-        if (!existingUser.getEmail().equals(user.getEmail()) && userRespository.existsByEmail(user.getEmail())) {
-            throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getEmail());
+        if (!existingUser.getUsername().equals(user.getUsername()) && userRespository.existsByUsername(user.getUsername())) {
+            throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getUsername());
         }
 
         existingUser.setName(user.getName());
-        existingUser.setEmail(user.getEmail());
+        existingUser.setUsername(user.getUsername());
         existingUser.setPassword(user.getPassword());
         existingUser.setPhone(user.getPhone());
         User updatedUser = userRespository.save(existingUser);

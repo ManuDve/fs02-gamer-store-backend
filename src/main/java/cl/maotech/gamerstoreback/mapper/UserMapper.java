@@ -12,7 +12,7 @@ public class UserMapper {
         return new UserResponseDto(
                 user.getId(),
                 user.getName(),
-                user.getEmail(),
+                user.getUsername(),  // El campo username se serializa como "email" gracias a @JsonProperty
                 user.getPhone()
         );
     }

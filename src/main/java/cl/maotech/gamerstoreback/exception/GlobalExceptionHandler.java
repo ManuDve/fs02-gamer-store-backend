@@ -35,9 +35,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        String message = "Error de integridad de datos";
-        if (ex.getMessage() != null && ex.getMessage().contains("email")) {
-            message = "El email ya está registrado";
+        String message = Messages.Error.DATA_INTEGRITY_ERROR;
+        if (ex.getMessage() != null && ex.getMessage().contains("username")) {
+            message = Messages.Error.EMAIL_ALREADY_REGISTERED;
         }
         ErrorResponse error = new ErrorResponse(message, HttpStatus.CONFLICT.value());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);

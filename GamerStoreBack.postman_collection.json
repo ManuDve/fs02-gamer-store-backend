@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
 		"name": "GamerStoreBack",
-		"description": "Colección de endpoints para GamerStoreBack API",
+		"description": "Colección de endpoints para GamerStoreBack API con autenticación Basic (usuario admin)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -12,6 +12,21 @@
 				{
 					"name": "Get All Users",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -23,13 +38,29 @@
 								"api",
 								"users"
 							]
-						}
+						},
+						"description": "Obtiene todos los usuarios. Requiere rol ADMIN o USER."
 					},
 					"response": []
 				},
 				{
 					"name": "Get User By ID",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -42,13 +73,29 @@
 								"users",
 								"1"
 							]
-						}
+						},
+						"description": "Obtiene un usuario por ID. Requiere rol ADMIN o USER."
 					},
 					"response": []
 				},
 				{
 					"name": "Create User",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -58,7 +105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Juan Pérez\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+56912345678\"\n}"
+							"raw": "{\n  \"name\": \"Juan Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+56912345678\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users",
@@ -69,13 +116,29 @@
 								"api",
 								"users"
 							]
-						}
+						},
+						"description": "Crea un nuevo usuario. Solo ADMIN puede crear usuarios."
 					},
 					"response": []
 				},
 				{
 					"name": "Update User",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [
 							{
@@ -85,7 +148,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Juan Pérez Actualizado\",\n  \"email\": \"updated@example.com\",\n  \"password\": \"newpassword123\",\n  \"phone\": \"+56987654321\"\n}"
+							"raw": "{\n  \"name\": \"Juan Pérez Actualizado\",\n  \"email\": \"juan.updated@example.com\",\n  \"password\": \"newpassword123\",\n  \"phone\": \"+56987654321\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users/1",
@@ -97,26 +160,318 @@
 								"users",
 								"1"
 							]
-						}
+						},
+						"description": "Actualiza un usuario existente. Solo ADMIN puede actualizar usuarios."
 					},
 					"response": []
 				},
 				{
 					"name": "Delete User",
 					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/users/1",
+							"raw": "{{base_url}}/api/users/2",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"users",
+								"2"
+							]
+						},
+						"description": "Elimina un usuario. Solo ADMIN puede eliminar usuarios."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authorities",
+			"item": [
+				{
+					"name": "Get All Authorities",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/authorities",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authorities"
+							]
+						},
+						"description": "Obtiene todas las autoridades/roles. Solo ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Authorities By User ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/authorities/user/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authorities",
+								"user",
 								"1"
 							]
-						}
+						},
+						"description": "Obtiene las autoridades de un usuario específico. Solo ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Authority By ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/authorities/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authorities",
+								"1"
+							]
+						},
+						"description": "Obtiene una autoridad por ID. Solo ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Authority - ROLE_USER",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": 2,\n  \"authority\": \"ROLE_USER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/authorities",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authorities"
+							]
+						},
+						"description": "Asigna el rol ROLE_USER a un usuario. Solo ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Authority - ROLE_ADMIN",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": 2,\n  \"authority\": \"ROLE_ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/authorities",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authorities"
+							]
+						},
+						"description": "Asigna el rol ROLE_ADMIN a un usuario. Solo ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Authority",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": 2,\n  \"authority\": \"ROLE_USER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/authorities/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authorities",
+								"1"
+							]
+						},
+						"description": "Actualiza una autoridad existente. Solo ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Authority",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin@admin.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "admin123",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/authorities/2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"authorities",
+								"2"
+							]
+						},
+						"description": "Elimina una autoridad. Solo ADMIN."
 					},
 					"response": []
 				}
