@@ -8,6 +8,14 @@ spring:
     password: ${DB_PASS}
     url: jdbc:mysql://${DB_URL}/defaultdb?sslMode=REQUIRED
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: 600000          # 10 minutos (menor que wait_timeout de MySQL)
+      connection-timeout: 30000      # 30 segundos
+      idle-timeout: 300000           # 5 minutos
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,3 +28,7 @@ logging:
   level:
     org.springframework.web: WARN
     org.springframework.security: WARN
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}

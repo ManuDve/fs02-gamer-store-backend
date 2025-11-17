@@ -1,6 +1,8 @@
 package cl.maotech.gamerstoreback.controller;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import cl.maotech.gamerstoreback.constant.UserEndpoints;
+import cl.maotech.gamerstoreback.dto.MessageResponse;
 import cl.maotech.gamerstoreback.dto.UserResponseDto;
 import cl.maotech.gamerstoreback.model.User;
 import cl.maotech.gamerstoreback.service.UserService;
@@ -40,9 +42,9 @@ public class UserController {
     }
 
     @DeleteMapping(UserEndpoints.ID)
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<MessageResponse> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new MessageResponse(Messages.User.DELETED, HttpStatus.OK.value()));
     }
 
 }

@@ -11,6 +11,7 @@ public final class Messages {
         public static final String EMAIL_INVALID = "El email debe ser válido";
         public static final String PASSWORD_REQUIRED = "La contraseña no puede estar vacía";
         public static final String PHONE_REQUIRED = "El teléfono no puede estar vacío";
+        public static final String DELETED = "Usuario eliminado exitosamente";
 
         private User() {
             throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
@@ -33,6 +34,12 @@ public final class Messages {
         public static final String INTERNAL_SERVER_ERROR = "Error interno del servidor";
         public static final String DATA_INTEGRITY_ERROR = "Error de integridad de datos";
         public static final String EMAIL_ALREADY_REGISTERED = "El email ya está registrado";
+        public static final String INVALID_CREDENTIALS = "Credenciales inválidas";
+        public static final String BAD_CREDENTIALS = "Email o contraseña incorrectos";
+        public static final String AUTHENTICATION_FAILED = "Error de autenticación";
+        public static final String INVALID_REQUEST_BODY = "El cuerpo de la petición es inválido o está vacío";
+        public static final String MALFORMED_JSON = "El formato JSON es inválido";
+        public static final String ACCESS_DENIED = "No tienes permisos para realizar esta acción";
 
         private Error() {
             throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");

@@ -2,10 +2,95 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
 		"name": "GamerStoreBack",
-		"description": "Colección de endpoints para GamerStoreBack API con autenticación Basic (usuario admin)",
+		"description": "Colección de endpoints para GamerStoreBack API con autenticación JWT",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login - Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"    console.log('Token guardado:', jsonData.token.substring(0, 20) + '...');",
+									"    pm.test('Login exitoso', function() {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@admin.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Usuario Duoc",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('jwt_token', jsonData.token);",
+									"    console.log('Token guardado:', jsonData.token.substring(0, 20) + '...');",
+									"    pm.test('Login exitoso', function() {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@duoc.cl\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Users",
 			"item": [
@@ -13,16 +98,11 @@
 					"name": "Get All Users",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -31,15 +111,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/users",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						},
-						"description": "Obtiene todos los usuarios. Requiere rol ADMIN o USER."
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						}
 					},
 					"response": []
 				},
@@ -47,16 +121,11 @@
 					"name": "Get User By ID",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -65,16 +134,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/users/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"1"
-							]
-						},
-						"description": "Obtiene un usuario por ID. Requiere rol ADMIN o USER."
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "1"]
+						}
 					},
 					"response": []
 				},
@@ -82,16 +144,11 @@
 					"name": "Create User",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -105,19 +162,13 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Juan Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+56912345678\"\n}"
+							"raw": "{\n  \"name\": \"Usuario Duoc\",\n  \"email\": \"usuario@duoc.cl\",\n  \"password\": \"password123\",\n  \"phone\": \"+56912345678\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/users",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						},
-						"description": "Crea un nuevo usuario. Solo ADMIN puede crear usuarios."
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"]
+						}
 					},
 					"response": []
 				},
@@ -125,16 +176,11 @@
 					"name": "Update User",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -151,17 +197,10 @@
 							"raw": "{\n  \"name\": \"Juan Pérez Actualizado\",\n  \"email\": \"juan.updated@example.com\",\n  \"password\": \"newpassword123\",\n  \"phone\": \"+56987654321\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/users/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"1"
-							]
-						},
-						"description": "Actualiza un usuario existente. Solo ADMIN puede actualizar usuarios."
+							"raw": "{{base_url}}/api/users/2",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "2"]
+						}
 					},
 					"response": []
 				},
@@ -169,16 +208,11 @@
 					"name": "Delete User",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -187,16 +221,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/users/2",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"2"
-							]
-						},
-						"description": "Elimina un usuario. Solo ADMIN puede eliminar usuarios."
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "2"]
+						}
 					},
 					"response": []
 				}
@@ -209,16 +236,11 @@
 					"name": "Get All Authorities",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -227,15 +249,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/authorities",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authorities"
-							]
-						},
-						"description": "Obtiene todas las autoridades/roles. Solo ADMIN."
+							"host": ["{{base_url}}"],
+							"path": ["api", "authorities"]
+						}
 					},
 					"response": []
 				},
@@ -243,16 +259,11 @@
 					"name": "Get Authorities By User ID",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -261,17 +272,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/authorities/user/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authorities",
-								"user",
-								"1"
-							]
-						},
-						"description": "Obtiene las autoridades de un usuario específico. Solo ADMIN."
+							"host": ["{{base_url}}"],
+							"path": ["api", "authorities", "user", "1"]
+						}
 					},
 					"response": []
 				},
@@ -279,16 +282,11 @@
 					"name": "Get Authority By ID",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -297,16 +295,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/authorities/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authorities",
-								"1"
-							]
-						},
-						"description": "Obtiene una autoridad por ID. Solo ADMIN."
+							"host": ["{{base_url}}"],
+							"path": ["api", "authorities", "1"]
+						}
 					},
 					"response": []
 				},
@@ -314,16 +305,11 @@
 					"name": "Create Authority - ROLE_USER",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -341,15 +327,9 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authorities",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authorities"
-							]
-						},
-						"description": "Asigna el rol ROLE_USER a un usuario. Solo ADMIN."
+							"host": ["{{base_url}}"],
+							"path": ["api", "authorities"]
+						}
 					},
 					"response": []
 				},
@@ -357,16 +337,11 @@
 					"name": "Create Authority - ROLE_ADMIN",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -384,15 +359,9 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authorities",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authorities"
-							]
-						},
-						"description": "Asigna el rol ROLE_ADMIN a un usuario. Solo ADMIN."
+							"host": ["{{base_url}}"],
+							"path": ["api", "authorities"]
+						}
 					},
 					"response": []
 				},
@@ -400,16 +369,11 @@
 					"name": "Update Authority",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -427,16 +391,9 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/api/authorities/1",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authorities",
-								"1"
-							]
-						},
-						"description": "Actualiza una autoridad existente. Solo ADMIN."
+							"host": ["{{base_url}}"],
+							"path": ["api", "authorities", "1"]
+						}
 					},
 					"response": []
 				},
@@ -444,16 +401,11 @@
 					"name": "Delete Authority",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
+							"type": "bearer",
+							"bearer": [
 								{
-									"key": "username",
-									"value": "admin@admin.com",
-									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "admin123",
+									"key": "token",
+									"value": "{{jwt_token}}",
 									"type": "string"
 								}
 							]
@@ -462,16 +414,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/authorities/2",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"authorities",
-								"2"
-							]
-						},
-						"description": "Elimina una autoridad. Solo ADMIN."
+							"host": ["{{base_url}}"],
+							"path": ["api", "authorities", "2"]
+						}
 					},
 					"response": []
 				}
@@ -482,6 +427,11 @@
 		{
 			"key": "base_url",
 			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
 			"type": "string"
 		}
 	]

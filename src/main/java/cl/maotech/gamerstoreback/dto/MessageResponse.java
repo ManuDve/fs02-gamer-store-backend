@@ -1,12 +1,11 @@
-package cl.maotech.gamerstoreback.exception;
+package cl.maotech.gamerstoreback.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ErrorResponse {
+public class MessageResponse {
     private String message;
     private int status;
 }
-
