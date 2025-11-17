@@ -72,9 +72,29 @@ La aplicación estará disponible en `http://localhost:8080`
        "password": "admin123"
      }
      ```
-   - Respuesta: Token JWT
+   - Respuesta: Token JWT con roles del usuario
+     ```json
+     {
+       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+       "type": "Bearer",
+       "email": "admin@admin.com",
+       "name": "Admin User",
+       "roles": ["ROLE_USER", "ROLE_ADMIN"]
+     }
+     ```
 
-3. **Uso del Token**
+3. **Validación en Frontend**
+   - Guardar respuesta completa en localStorage/sessionStorage
+   - Verificar si `roles` incluye `ROLE_ADMIN` para mostrar panel de administración
+   - Ejemplo:
+     ```javascript
+     const isAdmin = loginResponse.roles.includes('ROLE_ADMIN');
+     if (isAdmin) {
+       // Mostrar panel de admin
+     }
+     ```
+
+4. **Uso del Token**
    - Incluir en header: `Authorization: Bearer <token>`
    - Requerido para endpoints protegidos (CREATE, UPDATE, DELETE)
 

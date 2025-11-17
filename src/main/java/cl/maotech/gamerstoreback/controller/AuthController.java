@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -48,12 +51,18 @@ public class AuthController {
             tokenService.saveToken(((User) userDetails).getId(), jwt);
         }
 
+        // Extraer roles del usuario
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .collect(Collectors.toList());
+
         // Construir respuesta
         LoginResponseDto response = LoginResponseDto.builder()
                 .token(jwt)
                 .type("Bearer")
                 .email(userDetails.getUsername())
                 .name(userDetails instanceof User ? ((User) userDetails).getName() : null)
+                .roles(roles)
                 .build();
 
         return ResponseEntity.ok(response);
