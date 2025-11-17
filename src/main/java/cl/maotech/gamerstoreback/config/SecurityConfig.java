@@ -1,7 +1,9 @@
 package cl.maotech.gamerstoreback.config;
 
 import cl.maotech.gamerstoreback.constant.AuthorityEndpoints;
+import cl.maotech.gamerstoreback.constant.BlogPostEndpoints;
 import cl.maotech.gamerstoreback.constant.Messages;
+import cl.maotech.gamerstoreback.constant.ProductEndpoints;
 import cl.maotech.gamerstoreback.constant.SecurityRoles;
 import cl.maotech.gamerstoreback.constant.UserEndpoints;
 import cl.maotech.gamerstoreback.dto.MessageResponse;
@@ -55,19 +57,31 @@ public class SecurityConfig {
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers(HttpMethod.POST, UserEndpoints.BASE).permitAll()
 
+                    // Endpoints de Products - Acceso público para GET, solo ADMIN para modificaciones
+                    .requestMatchers(HttpMethod.GET, ProductEndpoints.BASE_WITH_WILDCARD).permitAll()
+                    .requestMatchers(HttpMethod.POST, ProductEndpoints.BASE).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.PUT, ProductEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, ProductEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
+
+                    // Endpoints de Blog Posts - Acceso público para GET, solo ADMIN para modificaciones
+                    .requestMatchers(HttpMethod.GET, BlogPostEndpoints.BASE_WITH_WILDCARD).permitAll()
+                    .requestMatchers(HttpMethod.POST, BlogPostEndpoints.BASE).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.PUT, BlogPostEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, BlogPostEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
+
                     // Endpoints de Users
                     .requestMatchers(HttpMethod.GET, UserEndpoints.BASE).hasAnyRole(SecurityRoles.USER, SecurityRoles.ADMIN)
-                    .requestMatchers(HttpMethod.GET, UserEndpoints.BASE + UserEndpoints.ID).hasAnyRole(SecurityRoles.USER, SecurityRoles.ADMIN)
-                    .requestMatchers(HttpMethod.PUT, UserEndpoints.BASE + UserEndpoints.ID).hasRole(SecurityRoles.ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, UserEndpoints.BASE + UserEndpoints.ID).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.GET, UserEndpoints.FULL_ID).hasAnyRole(SecurityRoles.USER, SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.PUT, UserEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, UserEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
 
                     // Endpoints de Authorities
                     .requestMatchers(HttpMethod.GET, AuthorityEndpoints.BASE).hasRole(SecurityRoles.ADMIN)
-                    .requestMatchers(HttpMethod.GET, AuthorityEndpoints.BASE + AuthorityEndpoints.BY_USER).hasRole(SecurityRoles.ADMIN)
-                    .requestMatchers(HttpMethod.GET, AuthorityEndpoints.BASE + AuthorityEndpoints.ID).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.GET, AuthorityEndpoints.FULL_BY_USER).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.GET, AuthorityEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
                     .requestMatchers(HttpMethod.POST, AuthorityEndpoints.BASE).hasRole(SecurityRoles.ADMIN)
-                    .requestMatchers(HttpMethod.PUT, AuthorityEndpoints.BASE + AuthorityEndpoints.ID).hasRole(SecurityRoles.ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, AuthorityEndpoints.BASE + AuthorityEndpoints.ID).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.PUT, AuthorityEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, AuthorityEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
 
                     // Cualquier otra petición debe estar autenticada
                     .anyRequest().authenticated()

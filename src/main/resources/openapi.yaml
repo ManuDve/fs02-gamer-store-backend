@@ -1,0 +1,621 @@
+openapi: 3.0.3
+info:
+  title: GamerStore API
+  description: API RESTful para la gestión de una tienda de productos gaming y blog de contenido relacionado
+  version: 1.0.0
+  contact:
+    name: MaoTech
+    email: soporte@maotech.cl
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor de desarrollo local
+  - url: https://api.gamerstore.cl
+    description: Servidor de producción
+
+tags:
+  - name: Authentication
+    description: Endpoints de autenticación y autorización
+  - name: Products
+    description: Gestión de productos de la tienda
+  - name: Blog Posts
+    description: Gestión de artículos del blog
+  - name: Users
+    description: Gestión de usuarios del sistema
+  - name: Authorities
+    description: Gestión de roles y permisos
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@admin.com
+        password:
+          type: string
+          format: password
+          example: admin123
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token para autenticación
+        type:
+          type: string
+          example: Bearer
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: GM001
+        category:
+          type: string
+          example: Juego de Mesa
+        name:
+          type: string
+          example: Catan
+        price:
+          type: integer
+          example: 34990
+        img:
+          type: string
+          format: uri
+        descripcion:
+          type: string
+        reseña:
+          type: string
+        caracteristics:
+          type: object
+          additionalProperties: true
+
+    BlogPost:
+      type: object
+      properties:
+        id:
+          type: string
+          example: BP001
+        titulo:
+          type: string
+        autor:
+          type: string
+        fecha:
+          type: string
+          format: date
+        imagen:
+          type: string
+          format: uri
+        descripcion:
+          type: string
+        articulo:
+          type: string
+        etiquetas:
+          type: array
+          items:
+            type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        enabled:
+          type: boolean
+
+    Authority:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        authority:
+          type: string
+          enum: [ROLE_USER, ROLE_ADMIN]
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: integer
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Autenticación de usuario
+      description: Genera un token JWT para acceder a endpoints protegidos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Credenciales inválidas
+
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: Obtener todos los productos
+      description: Endpoint público que retorna la lista completa de productos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+    post:
+      tags:
+        - Products
+      summary: Crear nuevo producto
+      description: Requiere rol ADMIN
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+        '401':
+          description: No autenticado
+        '403':
+          description: No autorizado (requiere rol ADMIN)
+
+  /api/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Obtener producto por ID
+      description: Endpoint público
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+
+    put:
+      tags:
+        - Products
+      summary: Actualizar producto
+      description: Requiere rol ADMIN
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Producto actualizado
+        '404':
+          description: Producto no encontrado
+
+    delete:
+      tags:
+        - Products
+      summary: Eliminar producto
+      description: Requiere rol ADMIN
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Producto eliminado
+        '404':
+          description: Producto no encontrado
+
+  /api/products/category/{category}:
+    get:
+      tags:
+        - Products
+      summary: Obtener productos por categoría
+      description: Endpoint público. Categorías disponibles - Juego de Mesa, Periférico Gamer, Consola
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+          description: URL debe codificar espacios como %20
+      responses:
+        '200':
+          description: Lista de productos de la categoría
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /api/products/search:
+    get:
+      tags:
+        - Products
+      summary: Buscar productos por nombre
+      description: Endpoint público
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resultados de búsqueda
+
+  /api/blog-posts:
+    get:
+      tags:
+        - Blog Posts
+      summary: Obtener todos los artículos
+      description: Endpoint público
+      responses:
+        '200':
+          description: Lista de artículos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogPost'
+
+    post:
+      tags:
+        - Blog Posts
+      summary: Crear nuevo artículo
+      description: Requiere rol ADMIN
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogPost'
+      responses:
+        '201':
+          description: Artículo creado
+
+  /api/blog-posts/{id}:
+    get:
+      tags:
+        - Blog Posts
+      summary: Obtener artículo por ID
+      description: Endpoint público
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artículo encontrado
+
+    put:
+      tags:
+        - Blog Posts
+      summary: Actualizar artículo
+      description: Requiere rol ADMIN
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artículo actualizado
+
+    delete:
+      tags:
+        - Blog Posts
+      summary: Eliminar artículo
+      description: Requiere rol ADMIN
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artículo eliminado
+
+  /api/blog-posts/tag/{tag}:
+    get:
+      tags:
+        - Blog Posts
+      summary: Obtener artículos por etiqueta
+      description: Endpoint público. URL debe codificar espacios como %20
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de artículos con la etiqueta
+
+  /api/blog-posts/author/{author}:
+    get:
+      tags:
+        - Blog Posts
+      summary: Obtener artículos por autor
+      description: Endpoint público. URL debe codificar espacios como %20
+      parameters:
+        - name: author
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de artículos del autor
+
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Obtener todos los usuarios
+      description: Requiere autenticación
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      tags:
+        - Users
+      summary: Registrar nuevo usuario
+      description: Endpoint público para registro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Usuario creado
+
+  /api/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Obtener usuario por ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario encontrado
+
+    put:
+      tags:
+        - Users
+      summary: Actualizar usuario
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario actualizado
+
+    delete:
+      tags:
+        - Users
+      summary: Eliminar usuario
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario eliminado
+
+  /api/authorities:
+    get:
+      tags:
+        - Authorities
+      summary: Obtener todos los permisos
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de permisos
+
+    post:
+      tags:
+        - Authorities
+      summary: Asignar permiso a usuario
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                authority:
+                  type: string
+                  enum: [ROLE_USER, ROLE_ADMIN]
+      responses:
+        '201':
+          description: Permiso asignado
+
+  /api/authorities/{id}:
+    get:
+      tags:
+        - Authorities
+      summary: Obtener permiso por ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permiso encontrado
+
+    put:
+      tags:
+        - Authorities
+      summary: Actualizar permiso
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permiso actualizado
+
+    delete:
+      tags:
+        - Authorities
+      summary: Eliminar permiso
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permiso eliminado
+
+  /api/authorities/user/{userId}:
+    get:
+      tags:
+        - Authorities
+      summary: Obtener permisos de un usuario
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de permisos del usuario
+

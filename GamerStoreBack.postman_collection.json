@@ -92,6 +92,339 @@
 			]
 		},
 		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product By ID (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/GM001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "GM001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Category - Juego de Mesa (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/category/Juego%20de%20Mesa",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "category", "Juego%20de%20Mesa"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Category - Periférico Gamer (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/category/Perif%C3%A9rico%20Gamer",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "category", "Perif%C3%A9rico%20Gamer"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products By Category - Consola (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/category/Consola",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "category", "Consola"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Products (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/search?query=catan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "search"],
+							"query": [
+								{
+									"key": "query",
+									"value": "catan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product (ADMIN ONLY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"GM001\",\n  \"category\": \"Juego de Mesa\",\n  \"name\": \"Catan\",\n  \"price\": 34990,\n  \"img\": \"https://tse2.mm.bing.net/th/id/OIP.Ygd6ZQ679UJMABllYf--_gHaHa?rs=1&pid=ImgDetMain&o=7&rm=3\",\n  \"descripcion\": \"Juego de estrategia de comercio y construcción de civilizaciones en la isla de Catan.\",\n  \"reseña\": \"Un clásico moderno, esencial para cualquier colección. ¡Perfecto para noches de estrategia!\",\n  \"caracteristics\": {\n    \"jugadores\": \"3-4\",\n    \"edadMinima\": \"+10 años\",\n    \"tiempoJuego\": \"60-120 min\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product (ADMIN ONLY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"category\": \"Juego de Mesa\",\n  \"name\": \"Catan - Edición Actualizada\",\n  \"price\": 39990,\n  \"img\": \"https://tse2.mm.bing.net/th/id/OIP.Ygd6ZQ679UJMABllYf--_gHaHa?rs=1&pid=ImgDetMain&o=7&rm=3\",\n  \"descripcion\": \"Juego de estrategia de comercio y construcción de civilizaciones en la isla de Catan.\",\n  \"reseña\": \"Un clásico moderno, esencial para cualquier colección. ¡Perfecto para noches de estrategia!\",\n  \"caracteristics\": {\n    \"jugadores\": \"3-4\",\n    \"edadMinima\": \"+10 años\",\n    \"tiempoJuego\": \"60-120 min\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/GM001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "GM001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product (ADMIN ONLY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/GM001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "GM001"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Blog Posts",
+			"item": [
+				{
+					"name": "Get All Blog Posts (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Blog Post By ID (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts/BP001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts", "BP001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Blog Posts By Tag - Juego de Mesa (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts/tag/Juego%20de%20Mesa",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts", "tag", "Juego%20de%20Mesa"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Blog Posts By Tag - Periféricos (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts/tag/Perif%C3%A9ricos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts", "tag", "Perif%C3%A9ricos"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Blog Posts By Author (PUBLIC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts/author/Sof%C3%ADa%20%27Boardgame%27%20Reyes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts", "author", "Sof%C3%ADa%20%27Boardgame%27%20Reyes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Blog Post (ADMIN ONLY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"BP001\",\n  \"titulo\": \"Los 5 Mejores Juegos de Mesa Cooperativos para Principiantes\",\n  \"autor\": \"Sofía 'Boardgame' Reyes\",\n  \"fecha\": \"2024-09-15\",\n  \"imagen\": \"https://franciscojosg10.sg-host.com/tiradados/wp-content/uploads/sites/5/2023/12/Los-mejores-Juegos-de-Mesa-Cooperativos.jpg\",\n  \"descripcion\": \"En un mundo lleno de competencia, a veces lo que necesitamos es unir fuerzas.\",\n  \"articulo\": \"En un mundo lleno de competencia, a veces lo que necesitamos es unir fuerzas. Exploramos títulos como Pandemic y El Descenso, ideales para empezar a jugar en equipo, enfocándonos en la comunicación y la estrategia conjunta para vencer al juego. Un análisis de sus mecánicas y por qué son perfectos para introducir a nuevos jugadores.\",\n  \"etiquetas\": [\n    \"Juego de Mesa\",\n    \"Cooperativo\",\n    \"Recomendaciones\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Blog Post (ADMIN ONLY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Los 5 Mejores Juegos de Mesa Cooperativos para Principiantes - Actualizado\",\n  \"autor\": \"Sofía 'Boardgame' Reyes\",\n  \"fecha\": \"2024-09-15\",\n  \"imagen\": \"https://franciscojosg10.sg-host.com/tiradados/wp-content/uploads/sites/5/2023/12/Los-mejores-Juegos-de-Mesa-Cooperativos.jpg\",\n  \"descripcion\": \"En un mundo lleno de competencia, a veces lo que necesitamos es unir fuerzas.\",\n  \"articulo\": \"En un mundo lleno de competencia, a veces lo que necesitamos es unir fuerzas. Exploramos títulos como Pandemic y El Descenso, ideales para empezar a jugar en equipo, enfocándonos en la comunicación y la estrategia conjunta para vencer al juego. Un análisis de sus mecánicas y por qué son perfectos para introducir a nuevos jugadores.\",\n  \"etiquetas\": [\n    \"Juego de Mesa\",\n    \"Cooperativo\",\n    \"Recomendaciones\",\n    \"Actualizado\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts/BP001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts", "BP001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Blog Post (ADMIN ONLY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/blog-posts/BP001",
+							"host": ["{{base_url}}"],
+							"path": ["api", "blog-posts", "BP001"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Users",
 			"item": [
 				{
@@ -143,16 +476,6 @@
 				{
 					"name": "Create User",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
