@@ -1,6 +1,6 @@
 # GamerStore API
 
-API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado. Incluye gestión de inventario, stock y sistema de órdenes de compra.
+API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado. Incluye gestión de inventario, stock, sistema de órdenes de compra y documentación interactiva con Swagger/OpenAPI.
 
 ## Requisitos Previos
 
@@ -54,6 +54,40 @@ java -jar target/gamer-store-back-0.0.1-SNAPSHOT.jar
 ```
 
 La aplicación estará disponible en `http://localhost:8080`
+
+## Documentación de la API
+
+### Swagger UI (Interfaz Interactiva)
+
+Accede a la documentación interactiva de la API en:
+
+**URL: http://localhost:8080/swagger-ui/index.html**
+
+Características de Swagger UI:
+- Explorar todos los endpoints disponibles organizados por categorías
+- Ver descripciones detalladas de cada operación
+- Probar endpoints directamente desde el navegador
+- Ver esquemas de request y response
+- Autenticación JWT integrada (botón "Authorize")
+
+### Cómo usar Swagger UI con JWT
+
+1. Hacer login en `POST /api/auth/login` para obtener el token
+2. Copiar el valor del token de la respuesta
+3. Hacer clic en el botón "Authorize" en la parte superior derecha
+4. Ingresar el token en el campo (sin agregar "Bearer", se agrega automáticamente)
+5. Hacer clic en "Authorize" y luego "Close"
+6. Ahora puedes probar endpoints protegidos
+
+### OpenAPI JSON
+
+Especificación OpenAPI 3.0 disponible en:
+
+**URL: http://localhost:8080/v3/api-docs**
+
+Formato YAML disponible en:
+
+**URL: http://localhost:8080/v3/api-docs.yaml**
 
 ## Autenticación
 
