@@ -8,7 +8,7 @@ import cl.maotech.gamerstoreback.exception.ResourceNotFoundException;
 import cl.maotech.gamerstoreback.mapper.UserMapper;
 import cl.maotech.gamerstoreback.model.Authority;
 import cl.maotech.gamerstoreback.model.User;
-import cl.maotech.gamerstoreback.repository.UserRespository;
+import cl.maotech.gamerstoreback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,43 +19,43 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRespository userRespository;
+    private final UserRepository userRepository;
 
     public List<UserResponseDto> getAllUsers() {
-        return userRespository.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
 
     public UserResponseDto getUserById(Long id) {
-        User user = userRespository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.User.NOT_FOUND + id));
         return UserMapper.toResponseDto(user);
     }
 
     @Transactional
     public UserResponseDto createUser(User user) {
-        if (userRespository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getUsername());
         }
 
         // Crear autoridad ROLE_USER por defecto
         Authority userAuthority = new Authority();
         userAuthority.setUser(user);
-        userAuthority.setAuthority("ROLE_" + SecurityRoles.USER);
+        userAuthority.setAuthority(SecurityRoles.ROLE_USER);
 
         // Agregar la autoridad al usuario
         user.getUserAuthorities().add(userAuthority);
 
-        User savedUser = userRespository.save(user);
+        User savedUser = userRepository.save(user);
         return UserMapper.toResponseDto(savedUser);
     }
 
     public UserResponseDto updateUser(Long id, User user) {
-        User existingUser = userRespository.findById(id)
+        User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.User.NOT_FOUND + id));
 
-        if (!existingUser.getUsername().equals(user.getUsername()) && userRespository.existsByUsername(user.getUsername())) {
+        if (!existingUser.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
             throw new DuplicateResourceException(Messages.User.EMAIL_ALREADY_EXISTS + user.getUsername());
         }
 
@@ -63,13 +63,13 @@ public class UserService {
         existingUser.setUsername(user.getUsername());
         existingUser.setPassword(user.getPassword());
         existingUser.setPhone(user.getPhone());
-        User updatedUser = userRespository.save(existingUser);
+        User updatedUser = userRepository.save(existingUser);
         return UserMapper.toResponseDto(updatedUser);
     }
 
     public void deleteUser(Long id) {
-        User user = userRespository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.User.NOT_FOUND + id));
-        userRespository.delete(user);
+        userRepository.delete(user);
     }
 }

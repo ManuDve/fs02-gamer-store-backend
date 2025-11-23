@@ -17,7 +17,8 @@ public class ProductResponseDto {
     private String name;
     private Integer price;
     private String img;
-    private String descripcion;
-    private String reseña;
-    private Map<String, String> caracteristics;
+    private String description;
+    private String review;
+    private Map<String, String> characteristics;
+    private Integer stock;
 }

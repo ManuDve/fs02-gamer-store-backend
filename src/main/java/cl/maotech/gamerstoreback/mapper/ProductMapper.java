@@ -16,9 +16,10 @@ public class ProductMapper {
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
         dto.setImg(product.getImg());
-        dto.setDescripcion(product.getDescripcion());
-        dto.setReseña(product.getReseña());
-        dto.setCaracteristics(mapCharacteristics(product.getCaracteristics(), product.getCategory()));
+        dto.setDescription(product.getDescription());
+        dto.setReview(product.getReview());
+        dto.setCharacteristics(mapCharacteristics(product.getCharacteristics(), product.getCategory()));
+        dto.setStock(product.getStock() != null ? product.getStock().getQuantity() : 0);
         return dto;
     }
 
@@ -51,12 +52,12 @@ public class ProductMapper {
             addIfNotNull(map, "microfono", chars.getMicrofono());
             addIfNotNull(map, "rotacion", chars.getRotacion());
             addIfNotNull(map, "feedback", chars.getFeedback());
-            addIfNotNull(map, "diseño", chars.getDiseño());
+            addIfNotNull(map, "diseno", chars.getDiseno());
             addIfNotNull(map, "ajuste", chars.getAjuste());
             addIfNotNull(map, "soporte", chars.getSoporte());
             addIfNotNull(map, "tipo", chars.getTipo());
             addIfNotNull(map, "patron", chars.getPatron());
-            addIfNotNull(map, "tamaño", chars.getTamaño());
+            addIfNotNull(map, "tamano", chars.getTamano());
             addIfNotNull(map, "frecuencia", chars.getFrecuencia());
             addIfNotNull(map, "respuesta", chars.getRespuesta());
         } else if ("Consola".equals(category)) {
@@ -86,5 +87,3 @@ public class ProductMapper {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 }
-
-

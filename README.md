@@ -1,6 +1,6 @@
 # GamerStore API
 
-API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado.
+API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado. Incluye gestión de inventario, stock y sistema de órdenes de compra.
 
 ## Requisitos Previos
 
@@ -114,8 +114,8 @@ La aplicación estará disponible en `http://localhost:8080`
 
 ### Públicos (Sin Autenticación)
 
-- `GET /api/products` - Listar todos los productos
-- `GET /api/products/{id}` - Obtener producto por ID
+- `GET /api/products` - Listar todos los productos (incluye stock)
+- `GET /api/products/{id}` - Obtener producto por ID (incluye stock)
 - `GET /api/products/category/{category}` - Filtrar por categoría
 - `GET /api/products/search?name={name}` - Buscar productos
 - `GET /api/blog-posts` - Listar artículos del blog
@@ -130,6 +130,7 @@ La aplicación estará disponible en `http://localhost:8080`
 - `GET /api/users/{id}` - Obtener usuario
 - `PUT /api/users/{id}` - Actualizar usuario
 - `DELETE /api/users/{id}` - Eliminar usuario
+- `POST /api/orders` - Crear orden de compra
 
 ### Protegidos (Requieren Rol ADMIN)
 
@@ -141,89 +142,161 @@ La aplicación estará disponible en `http://localhost:8080`
 - `DELETE /api/blog-posts/{id}` - Eliminar artículo
 - `GET/POST/PUT/DELETE /api/authorities/*` - Gestión de roles
 
-## Estructura de Datos
+## Sistema de Órdenes de Compra
 
-### Categorías de Productos
+### Flujo de Compra
 
-- Juego de Mesa
-- Periférico Gamer
-- Consola
+1. Usuario autenticado envía orden de compra a `POST /api/orders`
+2. Sistema valida:
+   - Token JWT vigente
+   - Productos existen
+   - Hay stock suficiente para cada producto
+3. Si todo es válido:
+   - Se genera número de orden automáticamente
+   - Se obtiene información del cliente del usuario autenticado (nombre, email, teléfono)
+   - Se calcula el subtotal basado en precios actuales de la base de datos
+   - Se calcula el total (subtotal + envío)
+   - Se crea la orden
+   - Se descuenta el stock
+   - Se guarda en la base de datos
+   - Se retorna boleta en formato JSON
 
-### Roles de Usuario
+### Validaciones de Stock
 
-- `ROLE_USER` - Acceso básico a endpoints protegidos
-- `ROLE_ADMIN` - Acceso completo, incluyendo operaciones CRUD
+El sistema valida automáticamente:
+- Existencia de productos
+- Stock suficiente para cada producto
+- Retorna error 400 con mensaje descriptivo si:
+  - La cantidad solicitada excede el stock disponible
+  - El producto no existe
+  - El producto no tiene stock disponible
 
-## Documentación API
+### Historial de Órdenes
 
-- OpenAPI Specification: `src/main/resources/openapi.yaml`
-- Postman Collection: `GamerStoreBack.postman_collection.json`
+#### Para usuarios regulares:
+- `GET /api/orders` - Obtiene todas las órdenes del usuario autenticado
+- `GET /api/orders/{orderNumber}` - Obtiene una orden específica (solo si le pertenece)
 
-### Importar Colección Postman
+#### Para administradores:
+- `GET /api/orders/all` - Obtiene todas las órdenes de todos los usuarios
+- `GET /api/orders/{orderNumber}` - Obtiene cualquier orden del sistema
 
-1. Abrir Postman
-2. Import > File > Seleccionar `GamerStoreBack.postman_collection.json`
-3. Configurar variable `base_url` (por defecto: `http://localhost:8080`)
-4. Ejecutar endpoint "Login - Admin" para obtener token automáticamente
+Las órdenes se guardan permanentemente en la base de datos y pueden consultarse en cualquier momento. Esto permite:
+- Dashboard de administración con últimas compras
+- Historial de compras del usuario
+- Generación de reportes y estadísticas
+- Seguimiento de ventas totales
 
-## Consideraciones Importantes
+### Ejemplo de Request Simplificado
 
-### URLs con Espacios
+El backend calcula automáticamente precios, subtotales y totales. La información del cliente se obtiene del JWT. Solo enviar:
 
-Las categorías y etiquetas con espacios deben codificarse en URLs:
-- Correcto: `/api/products/category/Juego%20de%20Mesa`
-- Incorrecto: `/api/products/category/Juego de Mesa`
-
-Postman codifica automáticamente. En navegadores o clientes HTTP, usar `encodeURIComponent()`.
-
-### Seguridad
-
-- JWT configurado para expirar en 24 horas (configurable)
-- Contraseñas encriptadas con BCrypt
-- CORS configurado para orígenes específicos
-- Endpoints públicos: productos y blog (lectura)
-- Endpoints protegidos: gestión de usuarios y contenido
-
-### Datos Iniciales
-
-La aplicación carga automáticamente:
-- 2 usuarios (admin y usuario regular)
-- 31 productos (juegos de mesa, periféricos, consolas)
-- 11 artículos de blog con etiquetas
-
-## Troubleshooting
-
-### Error de Conexión a Base de Datos
-
-Verificar variables de entorno y que MySQL esté ejecutándose.
-
-### Error "sql_require_primary_key"
-
-La aplicación ya maneja este requisito. Si persiste, verificar versión MySQL 8.0+.
-
-### Token JWT Inválido
-
-- Verificar que el token no haya expirado
-- Confirmar formato: `Authorization: Bearer <token>`
-- Generar nuevo token con endpoint de login
-
-## Estructura del Proyecto
-
+```json
+{
+  "order": {
+    "shippingAddress": {
+      "address": "Avenida Libertador Bernardo O'Higgins 1564",
+      "city": "Santiago",
+      "state": "Región Metropolitana",
+      "zipCode": "8320000"
+    },
+    "items": [
+      {
+        "id": "GM001",
+        "quantity": 1
+      },
+      {
+        "id": "GM002",
+        "quantity": 2
+      }
+    ],
+    "shipping": 0,
+    "payment": {
+      "cardNumber": "1234567890123456",
+      "cardName": "USUARIO DUOC",
+      "cardExpiry": "12/28",
+      "cardCVV": "123"
+    }
+  }
+}
 ```
-src/
-├── main/
-│   ├── java/cl/maotech/gamerstoreback/
-│   │   ├── config/          # Configuración (Security, JWT, CORS)
-│   │   ├── controller/      # Endpoints REST
-│   │   ├── dto/             # Data Transfer Objects
-│   │   ├── exception/       # Manejo de excepciones
-│   │   ├── model/           # Entidades JPA
-│   │   ├── repository/      # Interfaces JPA
-│   │   ├── service/         # Lógica de negocio
-│   │   └── util/            # Utilidades (JWT)
-│   └── resources/
-│       ├── application.yml  # Configuración principal
-│       ├── application-local.yml  # Configuración local
-│       ├── data.sql         # Datos iniciales
-│       └── openapi.yaml     # Especificación OpenAPI
+
+### Campos Calculados Automáticamente
+
+- `orderNumber`: Generado automáticamente con formato `ORD-{timestamp}-{uuid}`
+- `timestamp`: Fecha y hora actual del servidor
+- `customerInfo` (firstName, lastName, email, phone): Obtenido del usuario autenticado vía JWT
+- `price` (por item): Obtenido de la base de datos (precio actual)
+- `name` (por item): Obtenido de la base de datos
+- `subtotal`: Suma de (precio × cantidad) de todos los items
+- `total`: subtotal + shipping
+
+### Ejemplo de Response
+
+```json
+{
+  "orderNumber": "ORD-1700768450123-A1B2C3D4",
+  "timestamp": "2025-11-23T14:00:50.123",
+  "status": "COMPLETADA",
+  "message": "Orden creada exitosamente",
+  "customerInfo": {
+    "firstName": "Usuario",
+    "lastName": "Duoc",
+    "email": "usuario@duoc.cl",
+    "phone": "+56912345678"
+  },
+  "shippingAddress": {
+    "address": "Avenida Libertador Bernardo O'Higgins 1564",
+    "city": "Santiago",
+    "state": "Región Metropolitana",
+    "zipCode": "8320000"
+  },
+  "items": [
+    {
+      "id": "GM001",
+      "name": "Catan",
+      "price": 34990,
+      "quantity": 1,
+      "subtotal": 34990
+    },
+    {
+      "id": "GM002",
+      "name": "Dixit",
+      "price": 28990,
+      "quantity": 2,
+      "subtotal": 57980
+    }
+  ],
+  "summary": {
+    "subtotal": 92970,
+    "shipping": 0,
+    "total": 92970
+  }
+}
+```
+
+### Manejo de Errores
+
+#### Stock Insuficiente (400 Bad Request)
+```json
+{
+  "message": "Stock insuficiente para el producto: Catan. Disponible: 5, Solicitado: 10",
+  "statusCode": 400
+}
+```
+
+#### Producto No Encontrado (404 Not Found)
+```json
+{
+  "message": "Producto no encontrado con id: GM999",
+  "statusCode": 404
+}
+```
+
+#### Sin Autenticación (401 Unauthorized)
+```json
+{
+  "message": "Error de autenticación",
+  "statusCode": 401
+}
 ```

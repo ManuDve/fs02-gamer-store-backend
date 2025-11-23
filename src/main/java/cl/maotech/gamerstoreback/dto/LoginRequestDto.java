@@ -1,5 +1,6 @@
 package cl.maotech.gamerstoreback.dto;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -11,11 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginRequestDto {
 
-    @NotBlank(message = "El email no puede estar vacío")
-    @Email(message = "El email debe ser válido")
+    @NotBlank(message = Messages.Validation.EMAIL_NOT_EMPTY)
+    @Email(message = Messages.Validation.EMAIL_VALID)
     private String email;
 
-    @NotBlank(message = "La contraseña no puede estar vacía")
+    @NotBlank(message = Messages.Validation.PASSWORD_NOT_EMPTY)
     private String password;
 }
-

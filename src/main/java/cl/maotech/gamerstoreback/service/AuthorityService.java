@@ -8,7 +8,7 @@ import cl.maotech.gamerstoreback.mapper.AuthorityMapper;
 import cl.maotech.gamerstoreback.model.Authority;
 import cl.maotech.gamerstoreback.model.User;
 import cl.maotech.gamerstoreback.repository.AuthorityRepository;
-import cl.maotech.gamerstoreback.repository.UserRespository;
+import cl.maotech.gamerstoreback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class AuthorityService {
 
     private final AuthorityRepository authorityRepository;
-    private final UserRespository userRespository;
+    private final UserRepository userRepository;
 
     public List<AuthorityResponseDto> getAllAuthorities() {
         return authorityRepository.findAll().stream()
@@ -43,7 +43,7 @@ public class AuthorityService {
 
     @Transactional
     public AuthorityResponseDto createAuthority(AuthorityRequestDto requestDto) {
-        User user = userRespository.findById(requestDto.getUserId())
+        User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.Authority.USER_NOT_FOUND + requestDto.getUserId()));
 
         Authority authority = new Authority();
@@ -59,7 +59,7 @@ public class AuthorityService {
         Authority authority = authorityRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.Authority.NOT_FOUND + id));
 
-        User user = userRespository.findById(requestDto.getUserId())
+        User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.Authority.USER_NOT_FOUND + requestDto.getUserId()));
 
         authority.setUser(user);

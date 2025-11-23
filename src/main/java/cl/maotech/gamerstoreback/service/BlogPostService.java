@@ -1,5 +1,6 @@
 package cl.maotech.gamerstoreback.service;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import cl.maotech.gamerstoreback.dto.BlogPostResponseDto;
 import cl.maotech.gamerstoreback.exception.ResourceNotFoundException;
 import cl.maotech.gamerstoreback.mapper.BlogPostMapper;
@@ -26,7 +27,7 @@ public class BlogPostService {
 
     public BlogPostResponseDto getBlogPostById(String id) {
         BlogPost blogPost = blogPostRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Blog post no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.BlogPost.NOT_FOUND + id));
         return BlogPostMapper.toResponseDto(blogPost);
     }
 
@@ -51,7 +52,7 @@ public class BlogPostService {
     @Transactional
     public BlogPostResponseDto updateBlogPost(String id, BlogPost blogPost) {
         BlogPost existingBlogPost = blogPostRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Blog post no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.BlogPost.NOT_FOUND + id));
 
         existingBlogPost.setTitulo(blogPost.getTitulo());
         existingBlogPost.setAutor(blogPost.getAutor());
@@ -68,9 +69,8 @@ public class BlogPostService {
     @Transactional
     public void deleteBlogPost(String id) {
         if (!blogPostRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Blog post no encontrado con id: " + id);
+            throw new ResourceNotFoundException(Messages.BlogPost.NOT_FOUND + id);
         }
         blogPostRepository.deleteById(id);
     }
 }
-

@@ -1,7 +1,7 @@
 package cl.maotech.gamerstoreback.service;
 
 import cl.maotech.gamerstoreback.constant.Messages;
-import cl.maotech.gamerstoreback.repository.UserRespository;
+import cl.maotech.gamerstoreback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRespository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

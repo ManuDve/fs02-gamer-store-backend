@@ -1,5 +1,6 @@
 package cl.maotech.gamerstoreback.model;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -25,11 +26,11 @@ public class BlogPost {
     private String id;
 
     @NotBlank(message = "El título es requerido")
-    @Column(nullable = false, length = 500)
+    @NotBlank(message = Messages.Validation.TITLE_REQUIRED)
     private String titulo;
 
     @NotBlank(message = "El autor es requerido")
-    @Column(nullable = false)
+    @NotBlank(message = Messages.Validation.AUTHOR_REQUIRED)
     private String autor;
 
     @Column(nullable = false)
