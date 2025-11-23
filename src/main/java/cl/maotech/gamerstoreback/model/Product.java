@@ -36,19 +36,28 @@ public class Product {
     private String img;
 
     @Column(columnDefinition = "TEXT")
-    private String descripcion;
+    private String description;
 
     @Column(columnDefinition = "TEXT")
-    private String reseña;
+    private String review;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ProductCharacteristic caracteristics;
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private ProductCharacteristic characteristics;
 
-    public void setCaracteristics(ProductCharacteristic caracteristics) {
-        this.caracteristics = caracteristics;
-        if (caracteristics != null) {
-            caracteristics.setProduct(this);
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private ProductStock stock;
+
+    public void setCharacteristics(ProductCharacteristic characteristics) {
+        this.characteristics = characteristics;
+        if (characteristics != null) {
+            characteristics.setProduct(this);
+        }
+    }
+
+    public void setStock(ProductStock stock) {
+        this.stock = stock;
+        if (stock != null) {
+            stock.setProduct(this);
         }
     }
 }
-

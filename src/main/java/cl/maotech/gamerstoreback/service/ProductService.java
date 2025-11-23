@@ -57,9 +57,13 @@ public class ProductService {
         existingProduct.setName(product.getName());
         existingProduct.setPrice(product.getPrice());
         existingProduct.setImg(product.getImg());
-        existingProduct.setDescripcion(product.getDescripcion());
-        existingProduct.setReseña(product.getReseña());
-        existingProduct.setCaracteristics(product.getCaracteristics());
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setReview(product.getReview());
+        existingProduct.setCharacteristics(product.getCharacteristics());
+
+        if (product.getStock() != null) {
+            existingProduct.setStock(product.getStock());
+        }
 
         Product updatedProduct = productRepository.save(existingProduct);
         return ProductMapper.toResponseDto(updatedProduct);

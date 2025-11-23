@@ -1,6 +1,6 @@
 # GamerStore API
 
-API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado.
+API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado. Incluye gestión de inventario, stock y sistema de órdenes de compra.
 
 ## Requisitos Previos
 
@@ -114,8 +114,8 @@ La aplicación estará disponible en `http://localhost:8080`
 
 ### Públicos (Sin Autenticación)
 
-- `GET /api/products` - Listar todos los productos
-- `GET /api/products/{id}` - Obtener producto por ID
+- `GET /api/products` - Listar todos los productos (incluye stock)
+- `GET /api/products/{id}` - Obtener producto por ID (incluye stock)
 - `GET /api/products/category/{category}` - Filtrar por categoría
 - `GET /api/products/search?name={name}` - Buscar productos
 - `GET /api/blog-posts` - Listar artículos del blog
@@ -130,6 +130,7 @@ La aplicación estará disponible en `http://localhost:8080`
 - `GET /api/users/{id}` - Obtener usuario
 - `PUT /api/users/{id}` - Actualizar usuario
 - `DELETE /api/users/{id}` - Eliminar usuario
+- `POST /api/orders` - Crear orden de compra
 
 ### Protegidos (Requieren Rol ADMIN)
 
@@ -141,6 +142,85 @@ La aplicación estará disponible en `http://localhost:8080`
 - `DELETE /api/blog-posts/{id}` - Eliminar artículo
 - `GET/POST/PUT/DELETE /api/authorities/*` - Gestión de roles
 
+## Sistema de Órdenes de Compra
+
+### Flujo de Compra
+
+1. Usuario autenticado envía orden de compra a `POST /api/orders`
+2. Sistema valida:
+   - Token JWT vigente
+   - Productos existen
+   - Hay stock suficiente
+   - Precios coinciden con la base de datos
+   - Total calculado es correcto
+3. Si todo es válido:
+   - Se crea la orden
+   - Se descuenta el stock
+   - Se retorna boleta en formato JSON
+
+### Ejemplo de Request
+
+```json
+{
+  "order": {
+    "orderNumber": "ORD-1700768450123-456",
+    "timestamp": "2025-11-23T14:00:50Z",
+    "customerInfo": {
+      "firstName": "Manuel",
+      "lastName": "Dávila",
+      "email": "manuel.davila@email.com",
+      "phone": "+56912345678"
+    },
+    "shippingAddress": {
+      "address": "Avenida Libertador Bernardo O'Higgins 1564",
+      "city": "Santiago",
+      "state": "Región Metropolitana",
+      "zipCode": "8320000"
+    },
+    "items": [
+      {
+        "id": "GM001",
+        "name": "Catan",
+        "price": 34990,
+        "quantity": 1
+      },
+      {
+        "id": "GM002",
+        "name": "Dixit",
+        "price": 28990,
+        "quantity": 1
+      }
+    ],
+    "summary": {
+      "subtotal": 63980,
+      "shipping": 0,
+      "total": 63980
+    },
+    "payment": {
+      "cardNumber": "1234567890123456",
+      "cardName": "MANUEL DAVILA",
+      "cardExpiry": "12/28",
+      "cardCVV": "123"
+    }
+  }
+}
+```
+
+### Validaciones de Orden
+
+- Token JWT debe estar vigente
+- Productos deben existir en la base de datos
+- Debe haber stock suficiente para cada producto
+- Los precios deben coincidir con los de la base de datos
+- El subtotal debe ser la suma de (precio * cantidad) de cada item
+- El total debe ser subtotal + shipping
+
+### Errores Comunes
+
+- `401 Unauthorized` - Token inválido o expirado
+- `404 Not Found` - Producto no encontrado
+- `400 Bad Request` - Stock insuficiente, precio incorrecto, o total no coincide
+
 ## Estructura de Datos
 
 ### Categorías de Productos
@@ -149,9 +229,13 @@ La aplicación estará disponible en `http://localhost:8080`
 - Periférico Gamer
 - Consola
 
+### Stock de Productos
+
+Cada producto tiene un stock asociado que se actualiza automáticamente al procesar órdenes. Los productos se inicializan con cantidades entre 10 y 20 unidades.
+
 ### Roles de Usuario
 
-- `ROLE_USER` - Acceso básico a endpoints protegidos
+- `ROLE_USER` - Acceso básico a endpoints protegidos y puede realizar compras
 - `ROLE_ADMIN` - Acceso completo, incluyendo operaciones CRUD
 
 ## Documentación API
@@ -182,14 +266,15 @@ Postman codifica automáticamente. En navegadores o clientes HTTP, usar `encodeU
 - Contraseñas encriptadas con BCrypt
 - CORS configurado para orígenes específicos
 - Endpoints públicos: productos y blog (lectura)
-- Endpoints protegidos: gestión de usuarios y contenido
+- Endpoints protegidos: gestión de usuarios, contenido y órdenes de compra
 
 ### Datos Iniciales
 
 La aplicación carga automáticamente:
 - 2 usuarios (admin y usuario regular)
-- 31 productos (juegos de mesa, periféricos, consolas)
+- 31 productos con stock (juegos de mesa, periféricos, consolas)
 - 11 artículos de blog con etiquetas
+- Stock inicial entre 10-20 unidades por producto
 
 ## Troubleshooting
 
@@ -199,31 +284,8 @@ Verificar variables de entorno y que MySQL esté ejecutándose.
 
 ### Error "sql_require_primary_key"
 
-La aplicación ya maneja este requisito. Si persiste, verificar versión MySQL 8.0+.
+Ejecutar en MySQL: `SET GLOBAL sql_require_primary_key = 0;`
 
-### Token JWT Inválido
+### Stock Insuficiente
 
-- Verificar que el token no haya expirado
-- Confirmar formato: `Authorization: Bearer <token>`
-- Generar nuevo token con endpoint de login
-
-## Estructura del Proyecto
-
-```
-src/
-├── main/
-│   ├── java/cl/maotech/gamerstoreback/
-│   │   ├── config/          # Configuración (Security, JWT, CORS)
-│   │   ├── controller/      # Endpoints REST
-│   │   ├── dto/             # Data Transfer Objects
-│   │   ├── exception/       # Manejo de excepciones
-│   │   ├── model/           # Entidades JPA
-│   │   ├── repository/      # Interfaces JPA
-│   │   ├── service/         # Lógica de negocio
-│   │   └── util/            # Utilidades (JWT)
-│   └── resources/
-│       ├── application.yml  # Configuración principal
-│       ├── application-local.yml  # Configuración local
-│       ├── data.sql         # Datos iniciales
-│       └── openapi.yaml     # Especificación OpenAPI
-```
+El sistema valida automáticamente el stock disponible. Si el error persiste, verificar que los datos se hayan cargado correctamente.

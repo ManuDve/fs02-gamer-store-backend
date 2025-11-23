@@ -51,12 +51,12 @@ public class ProductCharacteristic {
     private String microfono;
     private String rotacion;
     private String feedback;
-    private String diseño;
+    private String diseno;
     private String ajuste;
     private String soporte;
     private String tipo;
     private String patron;
-    private String tamaño;
+    private String tamano;
     private String frecuencia;
     private String respuesta;
 

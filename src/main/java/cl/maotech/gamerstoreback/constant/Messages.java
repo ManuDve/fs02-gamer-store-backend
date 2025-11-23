@@ -46,6 +46,30 @@ public final class Messages {
         }
     }
 
+    public static final class Product {
+        public static final String NOT_FOUND = "Producto no encontrado con id: ";
+        public static final String INSUFFICIENT_STOCK = "Stock insuficiente para el producto: ";
+        public static final String NO_STOCK = "El producto no tiene stock disponible: ";
+        public static final String STOCK_EXCEEDED = "La cantidad solicitada excede el stock disponible";
+        public static final String CREATED = "Producto creado exitosamente";
+        public static final String DELETED = "Producto eliminado exitosamente";
+
+        private Product() {
+            throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        }
+    }
+
+    public static final class Order {
+        public static final String INVALID_TOTAL = "El total calculado no coincide con el total enviado";
+        public static final String EMPTY_ITEMS = "La orden debe contener al menos un producto";
+        public static final String CREATED = "Orden creada exitosamente";
+        public static final String NOT_FOUND = "Orden no encontrada con número: ";
+
+        private Order() {
+            throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        }
+    }
+
     private Messages() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }

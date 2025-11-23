@@ -553,6 +553,43 @@
 			]
 		},
 		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order (AUTHENTICATED)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order\": {\n    \"orderNumber\": \"ORD-1700768450123-456\",\n    \"timestamp\": \"2025-11-23T14:00:50Z\",\n    \"customerInfo\": {\n      \"firstName\": \"Manuel\",\n      \"lastName\": \"Dávila\",\n      \"email\": \"manuel.davila@email.com\",\n      \"phone\": \"+56912345678\"\n    },\n    \"shippingAddress\": {\n      \"address\": \"Avenida Libertador Bernardo O'Higgins 1564\",\n      \"city\": \"Santiago\",\n      \"state\": \"Región Metropolitana\",\n      \"zipCode\": \"8320000\"\n    },\n    \"items\": [\n      {\n        \"id\": \"GM001\",\n        \"name\": \"Catan\",\n        \"price\": 34990,\n        \"quantity\": 1\n      },\n      {\n        \"id\": \"GM002\",\n        \"name\": \"Dixit\",\n        \"price\": 28990,\n        \"quantity\": 1\n      }\n    ],\n    \"summary\": {\n      \"subtotal\": 63980,\n      \"shipping\": 0,\n      \"total\": 63980\n    },\n    \"payment\": {\n      \"cardNumber\": \"1234567890123456\",\n      \"cardName\": \"MANUEL DAVILA\",\n      \"cardExpiry\": \"12/28\",\n      \"cardCVV\": \"123\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Authorities",
 			"item": [
 				{
