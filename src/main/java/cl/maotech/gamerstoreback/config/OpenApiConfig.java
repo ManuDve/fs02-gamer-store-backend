@@ -1,5 +1,6 @@
 package cl.maotech.gamerstoreback.config;
 
+import cl.maotech.gamerstoreback.constant.SwaggerEndpoints;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -18,30 +19,29 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
-
         return new OpenAPI()
                 .info(new Info()
-                        .title("GamerStore API")
-                        .version("1.0.0")
-                        .description("API RESTful para la gestión de una tienda de productos gaming. Incluye gestión de inventario, stock, órdenes de compra, blog posts y autenticación JWT.")
+                        .title(SwaggerEndpoints.OpenApiInfo.TITLE)
+                        .version(SwaggerEndpoints.OpenApiInfo.VERSION)
+                        .description(SwaggerEndpoints.OpenApiInfo.DESCRIPTION)
                         .contact(new Contact()
-                                .name("MaoTech")
-                                .email("support@maotech.cl"))
+                                .name(SwaggerEndpoints.OpenApiInfo.CONTACT_NAME)
+                                .email(SwaggerEndpoints.OpenApiInfo.CONTACT_EMAIL))
                         .license(new License()
-                                .name("Apache 2.0")
-                                .url("https://www.apache.org/licenses/LICENSE-2.0")))
+                                .name(SwaggerEndpoints.OpenApiInfo.LICENSE_NAME)
+                                .url(SwaggerEndpoints.OpenApiInfo.LICENSE_URL)))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Servidor de desarrollo local")))
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                        new Server()
+                                .url(SwaggerEndpoints.OpenApiInfo.SERVER_URL)
+                                .description(SwaggerEndpoints.OpenApiInfo.SERVER_DESCRIPTION)))
+                .addSecurityItem(new SecurityRequirement().addList(SwaggerEndpoints.OpenApiInfo.SECURITY_SCHEME_NAME))
                 .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
+                        .addSecuritySchemes(SwaggerEndpoints.OpenApiInfo.SECURITY_SCHEME_NAME,
                                 new SecurityScheme()
-                                        .name(securitySchemeName)
+                                        .name(SwaggerEndpoints.OpenApiInfo.SECURITY_SCHEME_NAME)
                                         .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                        .description("Ingrese el token JWT obtenido del endpoint de login")));
+                                        .scheme(SwaggerEndpoints.OpenApiInfo.SECURITY_SCHEME)
+                                        .bearerFormat(SwaggerEndpoints.OpenApiInfo.BEARER_FORMAT)
+                                        .description(SwaggerEndpoints.OpenApiInfo.SECURITY_DESCRIPTION)));
     }
 }
-
