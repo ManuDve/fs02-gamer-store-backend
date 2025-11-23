@@ -2,7 +2,6 @@ package cl.maotech.gamerstoreback.controller;
 
 import cl.maotech.gamerstoreback.constant.BlogPostEndpoints;
 import cl.maotech.gamerstoreback.constant.Messages;
-import cl.maotech.gamerstoreback.constant.SwaggerMessages;
 import cl.maotech.gamerstoreback.dto.BlogPostResponseDto;
 import cl.maotech.gamerstoreback.dto.MessageResponse;
 import cl.maotech.gamerstoreback.model.BlogPost;

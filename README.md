@@ -1,6 +1,6 @@
 # GamerStore API
 
-API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado. Incluye gestión de inventario, stock, sistema de órdenes de compra y documentación interactiva con Swagger/OpenAPI.
+API RESTful para la gestión de una tienda de productos gaming y contenido de blog relacionado. Incluye gestión de inventario, stock y sistema de órdenes de compra.
 
 ## Requisitos Previos
 
