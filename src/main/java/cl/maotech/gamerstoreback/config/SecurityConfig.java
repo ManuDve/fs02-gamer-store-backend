@@ -6,6 +6,7 @@ import cl.maotech.gamerstoreback.constant.Messages;
 import cl.maotech.gamerstoreback.constant.OrderEndpoints;
 import cl.maotech.gamerstoreback.constant.ProductEndpoints;
 import cl.maotech.gamerstoreback.constant.SecurityRoles;
+import cl.maotech.gamerstoreback.constant.SwaggerEndpoints;
 import cl.maotech.gamerstoreback.constant.UserEndpoints;
 import cl.maotech.gamerstoreback.dto.MessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,6 +58,10 @@ public class SecurityConfig {
                     // Permitir acceso público al login y registro
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers(HttpMethod.POST, UserEndpoints.BASE).permitAll()
+
+                    // Permitir acceso público a Swagger y OpenAPI
+                    .requestMatchers(SwaggerEndpoints.SWAGGER_UI, SwaggerEndpoints.SWAGGER_UI_HTML).permitAll()
+                    .requestMatchers(SwaggerEndpoints.API_DOCS, SwaggerEndpoints.API_DOCS_YAML).permitAll()
 
                     // Endpoints de Products - Acceso público para GET, solo ADMIN para modificaciones
                     .requestMatchers(HttpMethod.GET, ProductEndpoints.BASE_WITH_WILDCARD).permitAll()
