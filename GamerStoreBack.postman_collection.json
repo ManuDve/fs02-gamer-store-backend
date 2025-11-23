@@ -200,7 +200,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"id\": \"GM001\",\n  \"category\": \"Juego de Mesa\",\n  \"name\": \"Catan\",\n  \"price\": 34990,\n  \"img\": \"https://tse2.mm.bing.net/th/id/OIP.Ygd6ZQ679UJMABllYf--_gHaHa?rs=1&pid=ImgDetMain&o=7&rm=3\",\n  \"descripcion\": \"Juego de estrategia de comercio y construcción de civilizaciones en la isla de Catan.\",\n  \"reseña\": \"Un clásico moderno, esencial para cualquier colección. ¡Perfecto para noches de estrategia!\",\n  \"caracteristics\": {\n    \"jugadores\": \"3-4\",\n    \"edadMinima\": \"+10 años\",\n    \"tiempoJuego\": \"60-120 min\"\n  }\n}"
+							"raw": "{\n  \"id\": \"TEST001\",\n  \"category\": \"Juego de Mesa\",\n  \"name\": \"Catan - Edición de Prueba\",\n  \"price\": 34990,\n  \"img\": \"https://example.com/catan.jpg\",\n  \"description\": \"Juego de estrategia de comercio y construcción de civilizaciones en la isla de Catan.\",\n  \"review\": \"Un clásico moderno, esencial para cualquier colección. Perfecto para noches de estrategia.\",\n  \"characteristics\": {\n    \"jugadores\": \"3-4\",\n    \"edadMinima\": \"+10 años\",\n    \"tiempoJuego\": \"60-120 min\"\n  },\n  \"stock\": {\n    \"quantity\": 10\n  }\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/products",
@@ -232,12 +232,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"category\": \"Juego de Mesa\",\n  \"name\": \"Catan - Edición Actualizada\",\n  \"price\": 39990,\n  \"img\": \"https://tse2.mm.bing.net/th/id/OIP.Ygd6ZQ679UJMABllYf--_gHaHa?rs=1&pid=ImgDetMain&o=7&rm=3\",\n  \"descripcion\": \"Juego de estrategia de comercio y construcción de civilizaciones en la isla de Catan.\",\n  \"reseña\": \"Un clásico moderno, esencial para cualquier colección. ¡Perfecto para noches de estrategia!\",\n  \"caracteristics\": {\n    \"jugadores\": \"3-4\",\n    \"edadMinima\": \"+10 años\",\n    \"tiempoJuego\": \"60-120 min\"\n  }\n}"
+							"raw": "{\n  \"category\": \"Juego de Mesa\",\n  \"name\": \"Catan - Edición Actualizada\",\n  \"price\": 39990,\n  \"img\": \"https://example.com/catan-updated.jpg\",\n  \"description\": \"Juego de estrategia de comercio y construcción de civilizaciones en la isla de Catan. Versión actualizada.\",\n  \"review\": \"Un clásico moderno, esencial para cualquier colección. Perfecto para noches de estrategia. Ahora con mejores componentes.\",\n  \"characteristics\": {\n    \"jugadores\": \"3-4\",\n    \"edadMinima\": \"+10 años\",\n    \"tiempoJuego\": \"60-120 min\"\n  },\n  \"stock\": {\n    \"quantity\": 15\n  }\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/products/GM001",
+							"raw": "{{base_url}}/api/products/TEST001",
 							"host": ["{{base_url}}"],
-							"path": ["api", "products", "GM001"]
+							"path": ["api", "products", "TEST001"]
 						}
 					},
 					"response": []
@@ -258,9 +258,9 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/products/GM001",
+							"raw": "{{base_url}}/api/products/TEST001",
 							"host": ["{{base_url}}"],
-							"path": ["api", "products", "GM001"]
+							"path": ["api", "products", "TEST001"]
 						}
 					},
 					"response": []
@@ -577,12 +577,82 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"order\": {\n    \"orderNumber\": \"ORD-1700768450123-456\",\n    \"timestamp\": \"2025-11-23T14:00:50Z\",\n    \"customerInfo\": {\n      \"firstName\": \"Manuel\",\n      \"lastName\": \"Dávila\",\n      \"email\": \"manuel.davila@email.com\",\n      \"phone\": \"+56912345678\"\n    },\n    \"shippingAddress\": {\n      \"address\": \"Avenida Libertador Bernardo O'Higgins 1564\",\n      \"city\": \"Santiago\",\n      \"state\": \"Región Metropolitana\",\n      \"zipCode\": \"8320000\"\n    },\n    \"items\": [\n      {\n        \"id\": \"GM001\",\n        \"name\": \"Catan\",\n        \"price\": 34990,\n        \"quantity\": 1\n      },\n      {\n        \"id\": \"GM002\",\n        \"name\": \"Dixit\",\n        \"price\": 28990,\n        \"quantity\": 1\n      }\n    ],\n    \"summary\": {\n      \"subtotal\": 63980,\n      \"shipping\": 0,\n      \"total\": 63980\n    },\n    \"payment\": {\n      \"cardNumber\": \"1234567890123456\",\n      \"cardName\": \"MANUEL DAVILA\",\n      \"cardExpiry\": \"12/28\",\n      \"cardCVV\": \"123\"\n    }\n  }\n}"
+							"raw": "{\n  \"order\": {\n    \"shippingAddress\": {\n      \"address\": \"Avenida Libertador Bernardo O'Higgins 1564\",\n      \"city\": \"Santiago\",\n      \"state\": \"Región Metropolitana\",\n      \"zipCode\": \"8320000\"\n    },\n    \"items\": [\n      {\n        \"id\": \"GM001\",\n        \"quantity\": 1\n      },\n      {\n        \"id\": \"GM002\",\n        \"quantity\": 1\n      }\n    ],\n    \"shipping\": 0,\n    \"payment\": {\n      \"cardNumber\": \"1234567890123456\",\n      \"cardName\": \"USUARIO DUOC\",\n      \"cardExpiry\": \"12/28\",\n      \"cardCVV\": \"123\"\n    }\n  }\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/orders",
 							"host": ["{{base_url}}"],
 							"path": ["api", "orders"]
+						},
+						"description": "Crea una orden para el usuario autenticado. La información del cliente (nombre, email, teléfono) se obtiene automáticamente del JWT."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Orders (USER)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Orders (ADMIN ONLY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "all"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order by Number (USER/ADMIN)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/orders/ORD-1700768450123-456",
+							"host": ["{{base_url}}"],
+							"path": ["api", "orders", "ORD-1700768450123-456"]
 						}
 					},
 					"response": []

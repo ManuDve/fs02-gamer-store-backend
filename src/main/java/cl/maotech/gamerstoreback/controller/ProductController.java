@@ -1,5 +1,6 @@
 package cl.maotech.gamerstoreback.controller;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import cl.maotech.gamerstoreback.constant.ProductEndpoints;
 import cl.maotech.gamerstoreback.dto.MessageResponse;
 import cl.maotech.gamerstoreback.dto.ProductResponseDto;
@@ -53,6 +54,6 @@ public class ProductController {
     @DeleteMapping(ProductEndpoints.ID)
     public ResponseEntity<MessageResponse> deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
-        return ResponseEntity.ok(new MessageResponse("Producto eliminado exitosamente", HttpStatus.OK.value()));
+        return ResponseEntity.ok(new MessageResponse(Messages.Product.DELETED, HttpStatus.OK.value()));
     }
 }

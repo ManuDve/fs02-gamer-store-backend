@@ -3,6 +3,7 @@ package cl.maotech.gamerstoreback.config;
 import cl.maotech.gamerstoreback.constant.AuthorityEndpoints;
 import cl.maotech.gamerstoreback.constant.BlogPostEndpoints;
 import cl.maotech.gamerstoreback.constant.Messages;
+import cl.maotech.gamerstoreback.constant.OrderEndpoints;
 import cl.maotech.gamerstoreback.constant.ProductEndpoints;
 import cl.maotech.gamerstoreback.constant.SecurityRoles;
 import cl.maotech.gamerstoreback.constant.UserEndpoints;
@@ -82,6 +83,12 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.POST, AuthorityEndpoints.BASE).hasRole(SecurityRoles.ADMIN)
                     .requestMatchers(HttpMethod.PUT, AuthorityEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
                     .requestMatchers(HttpMethod.DELETE, AuthorityEndpoints.FULL_ID).hasRole(SecurityRoles.ADMIN)
+
+                    // Endpoints de Orders
+                    .requestMatchers(HttpMethod.POST, OrderEndpoints.BASE).hasAnyRole(SecurityRoles.USER, SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.GET, OrderEndpoints.BASE).hasAnyRole(SecurityRoles.USER, SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.GET, OrderEndpoints.FULL_ALL).hasRole(SecurityRoles.ADMIN)
+                    .requestMatchers(HttpMethod.GET, OrderEndpoints.BASE_WITH_WILDCARD).hasAnyRole(SecurityRoles.USER, SecurityRoles.ADMIN)
 
                     // Cualquier otra petición debe estar autenticada
                     .anyRequest().authenticated()

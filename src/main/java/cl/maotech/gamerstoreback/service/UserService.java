@@ -42,7 +42,7 @@ public class UserService {
         // Crear autoridad ROLE_USER por defecto
         Authority userAuthority = new Authority();
         userAuthority.setUser(user);
-        userAuthority.setAuthority("ROLE_" + SecurityRoles.USER);
+        userAuthority.setAuthority(SecurityRoles.ROLE_USER);
 
         // Agregar la autoridad al usuario
         user.getUserAuthorities().add(userAuthority);

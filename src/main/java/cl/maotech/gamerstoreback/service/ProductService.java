@@ -1,5 +1,6 @@
 package cl.maotech.gamerstoreback.service;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import cl.maotech.gamerstoreback.dto.ProductResponseDto;
 import cl.maotech.gamerstoreback.exception.ResourceNotFoundException;
 import cl.maotech.gamerstoreback.mapper.ProductMapper;
@@ -26,7 +27,7 @@ public class ProductService {
 
     public ProductResponseDto getProductById(String id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.Product.NOT_FOUND + id));
         return ProductMapper.toResponseDto(product);
     }
 
@@ -51,7 +52,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDto updateProduct(String id, Product product) {
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.Product.NOT_FOUND + id));
 
         existingProduct.setCategory(product.getCategory());
         existingProduct.setName(product.getName());
@@ -72,7 +73,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(String id) {
         if (!productRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Producto no encontrado con id: " + id);
+            throw new ResourceNotFoundException(Messages.Product.NOT_FOUND + id);
         }
         productRepository.deleteById(id);
     }

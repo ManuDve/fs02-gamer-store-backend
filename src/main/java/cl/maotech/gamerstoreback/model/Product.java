@@ -1,5 +1,6 @@
 package cl.maotech.gamerstoreback.model;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,15 +22,15 @@ public class Product {
     private String id;
 
     @NotBlank(message = "La categoría es requerida")
-    @Column(nullable = false)
+    @NotBlank(message = Messages.Validation.CATEGORY_REQUIRED)
     private String category;
 
     @NotBlank(message = "El nombre es requerido")
-    @Column(nullable = false, length = 500)
+    @NotBlank(message = Messages.Validation.NAME_REQUIRED)
     private String name;
 
     @NotNull(message = "El precio es requerido")
-    @Column(nullable = false)
+    @NotNull(message = Messages.Validation.PRICE_REQUIRED)
     private Integer price;
 
     @Column(length = 1000)

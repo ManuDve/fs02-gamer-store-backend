@@ -1,8 +1,10 @@
 package cl.maotech.gamerstoreback.service;
 
 import cl.maotech.gamerstoreback.constant.Messages;
+import cl.maotech.gamerstoreback.constant.SecurityRoles;
 import cl.maotech.gamerstoreback.dto.OrderRequestDto;
 import cl.maotech.gamerstoreback.dto.OrderResponseDto;
+import cl.maotech.gamerstoreback.exception.BusinessValidationException;
 import cl.maotech.gamerstoreback.exception.ResourceNotFoundException;
 import cl.maotech.gamerstoreback.model.*;
 import cl.maotech.gamerstoreback.repository.OrderRepository;
@@ -14,9 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,18 +34,13 @@ public class OrderService {
     public OrderResponseDto createOrder(OrderRequestDto orderRequest, String userEmail) {
         OrderRequestDto.OrderData orderData = orderRequest.getOrder();
 
-        // Validar que la orden tenga items
-        if (orderData.getItems() == null || orderData.getItems().isEmpty()) {
-            throw new IllegalArgumentException(Messages.Order.EMPTY_ITEMS);
-        }
-
-        // Buscar el usuario
+        // Buscar el usuario autenticado
         User user = userRepository.findByUsername(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.User.USERNAME_NOT_FOUND + userEmail));
 
-        // Validar productos, stock y calcular total
+        // Validar productos y stock
         int calculatedSubtotal = 0;
-        List<Product> productsToValidate = new ArrayList<>();
+        List<OrderItemData> orderItemsData = new ArrayList<>();
 
         for (OrderRequestDto.OrderItemDto item : orderData.getItems()) {
             // Verificar que el producto existe
@@ -51,70 +49,60 @@ public class OrderService {
 
             // Verificar que tiene stock
             if (product.getStock() == null) {
-                throw new IllegalArgumentException(Messages.Product.NO_STOCK + item.getId());
+                throw new BusinessValidationException(Messages.Product.NO_STOCK + product.getName());
             }
 
             // Verificar que hay suficiente stock
             if (product.getStock().getQuantity() < item.getQuantity()) {
-                throw new IllegalArgumentException(Messages.Product.INSUFFICIENT_STOCK + product.getName() +
-                    ". Disponible: " + product.getStock().getQuantity() + ", Solicitado: " + item.getQuantity());
+                throw new BusinessValidationException(
+                    Messages.Product.INSUFFICIENT_STOCK + product.getName() +
+                    Messages.Product.STOCK_AVAILABLE + product.getStock().getQuantity() +
+                    Messages.Product.STOCK_REQUESTED + item.getQuantity()
+                );
             }
 
-            // Verificar que el precio coincide
-            if (!product.getPrice().equals(item.getPrice())) {
-                throw new IllegalArgumentException("El precio del producto " + product.getName() +
-                    " no coincide. Esperado: " + product.getPrice() + ", Recibido: " + item.getPrice());
-            }
+            // Calcular subtotal con el precio actual del producto
+            int itemSubtotal = product.getPrice() * item.getQuantity();
+            calculatedSubtotal += itemSubtotal;
 
-            productsToValidate.add(product);
-            calculatedSubtotal += item.getPrice() * item.getQuantity();
+            orderItemsData.add(new OrderItemData(product, item.getQuantity(), product.getPrice()));
         }
 
-        // Validar que el total calculado coincide
-        int calculatedTotal = calculatedSubtotal + orderData.getSummary().getShipping();
-        if (calculatedTotal != orderData.getSummary().getTotal()) {
-            throw new IllegalArgumentException(Messages.Order.INVALID_TOTAL +
-                ". Calculado: " + calculatedTotal + ", Recibido: " + orderData.getSummary().getTotal());
-        }
+        // Calcular total
+        int calculatedTotal = calculatedSubtotal + orderData.getShipping();
 
-        // Validar que el subtotal coincide
-        if (calculatedSubtotal != orderData.getSummary().getSubtotal()) {
-            throw new IllegalArgumentException("El subtotal no coincide. Calculado: " + calculatedSubtotal +
-                ", Recibido: " + orderData.getSummary().getSubtotal());
-        }
+        // Generar número de orden único
+        String orderNumber = generateOrderNumber();
 
-        // Crear la orden
+        // Crear la orden usando la información del usuario autenticado
         Order order = new Order();
-        order.setOrderNumber(orderData.getOrderNumber());
-        order.setTimestamp(LocalDateTime.parse(orderData.getTimestamp(), DateTimeFormatter.ISO_DATE_TIME));
+        order.setOrderNumber(orderNumber);
+        order.setTimestamp(LocalDateTime.now());
         order.setUser(user);
-        order.setFirstName(orderData.getCustomerInfo().getFirstName());
-        order.setLastName(orderData.getCustomerInfo().getLastName());
-        order.setEmail(orderData.getCustomerInfo().getEmail());
-        order.setPhone(orderData.getCustomerInfo().getPhone());
+        order.setFirstName(user.getName().split(" ")[0]);
+        order.setLastName(user.getName().contains(" ") ? user.getName().substring(user.getName().indexOf(" ") + 1) : "");
+        order.setEmail(user.getUsername());
+        order.setPhone(user.getPhone());
         order.setAddress(orderData.getShippingAddress().getAddress());
         order.setCity(orderData.getShippingAddress().getCity());
         order.setState(orderData.getShippingAddress().getState());
         order.setZipCode(orderData.getShippingAddress().getZipCode());
-        order.setSubtotal(orderData.getSummary().getSubtotal());
-        order.setShipping(orderData.getSummary().getShipping());
-        order.setTotal(orderData.getSummary().getTotal());
+        order.setSubtotal(calculatedSubtotal);
+        order.setShipping(orderData.getShipping());
+        order.setTotal(calculatedTotal);
 
         // Agregar items y actualizar stock
-        for (int i = 0; i < orderData.getItems().size(); i++) {
-            OrderRequestDto.OrderItemDto itemDto = orderData.getItems().get(i);
-            Product product = productsToValidate.get(i);
-
+        for (OrderItemData itemData : orderItemsData) {
             OrderItem orderItem = new OrderItem();
-            orderItem.setProductId(itemDto.getId());
-            orderItem.setProductName(itemDto.getName());
-            orderItem.setPrice(itemDto.getPrice());
-            orderItem.setQuantity(itemDto.getQuantity());
+            orderItem.setProductId(itemData.product.getId());
+            orderItem.setProductName(itemData.product.getName());
+            orderItem.setPrice(itemData.price);
+            orderItem.setQuantity(itemData.quantity);
             order.addItem(orderItem);
 
             // Actualizar stock
-            ProductStock stock = product.getStock();
-            stock.setQuantity(stock.getQuantity() - itemDto.getQuantity());
+            ProductStock stock = itemData.product.getStock();
+            stock.setQuantity(stock.getQuantity() - itemData.quantity);
             productStockRepository.save(stock);
         }
 
@@ -125,11 +113,50 @@ public class OrderService {
         return buildOrderResponse(savedOrder);
     }
 
+    public List<OrderResponseDto> getOrdersByUser(String userEmail) {
+        User user = userRepository.findByUsername(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.User.USERNAME_NOT_FOUND + userEmail));
+
+        List<Order> orders = orderRepository.findByUserOrderByTimestampDesc(user);
+        return orders.stream()
+                .map(this::buildOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponseDto> getAllOrders() {
+        List<Order> orders = orderRepository.findAllByOrderByTimestampDesc();
+        return orders.stream()
+                .map(this::buildOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+    public OrderResponseDto getOrderByNumber(String orderNumber, String userEmail) {
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.Order.NOT_FOUND + orderNumber));
+
+        User user = userRepository.findByUsername(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.User.USERNAME_NOT_FOUND + userEmail));
+
+        // Verificar que el usuario sea el dueño de la orden o sea admin
+        boolean isAdmin = user.getAuthorities().stream()
+                .anyMatch(auth -> SecurityRoles.ROLE_ADMIN.equals(auth.getAuthority()));
+
+        if (!order.getUser().getId().equals(user.getId()) && !isAdmin) {
+            throw new BusinessValidationException(Messages.Order.UNAUTHORIZED_ACCESS);
+        }
+
+        return buildOrderResponse(order);
+    }
+
+    private String generateOrderNumber() {
+        return "ORD-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
     private OrderResponseDto buildOrderResponse(Order order) {
         OrderResponseDto response = new OrderResponseDto();
         response.setOrderNumber(order.getOrderNumber());
         response.setTimestamp(order.getTimestamp());
-        response.setStatus("COMPLETADA");
+        response.setStatus(Messages.Order.STATUS_COMPLETED);
         response.setMessage(Messages.Order.CREATED);
 
         OrderResponseDto.CustomerInfo customerInfo = new OrderResponseDto.CustomerInfo();
@@ -165,5 +192,17 @@ public class OrderService {
         response.setSummary(summary);
 
         return response;
+    }
+
+    private static class OrderItemData {
+        Product product;
+        int quantity;
+        int price;
+
+        OrderItemData(Product product, int quantity, int price) {
+            this.product = product;
+            this.quantity = quantity;
+            this.price = price;
+        }
     }
 }

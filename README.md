@@ -150,27 +150,50 @@ La aplicación estará disponible en `http://localhost:8080`
 2. Sistema valida:
    - Token JWT vigente
    - Productos existen
-   - Hay stock suficiente
-   - Precios coinciden con la base de datos
-   - Total calculado es correcto
+   - Hay stock suficiente para cada producto
 3. Si todo es válido:
+   - Se genera número de orden automáticamente
+   - Se obtiene información del cliente del usuario autenticado (nombre, email, teléfono)
+   - Se calcula el subtotal basado en precios actuales de la base de datos
+   - Se calcula el total (subtotal + envío)
    - Se crea la orden
    - Se descuenta el stock
+   - Se guarda en la base de datos
    - Se retorna boleta en formato JSON
 
-### Ejemplo de Request
+### Validaciones de Stock
+
+El sistema valida automáticamente:
+- Existencia de productos
+- Stock suficiente para cada producto
+- Retorna error 400 con mensaje descriptivo si:
+  - La cantidad solicitada excede el stock disponible
+  - El producto no existe
+  - El producto no tiene stock disponible
+
+### Historial de Órdenes
+
+#### Para usuarios regulares:
+- `GET /api/orders` - Obtiene todas las órdenes del usuario autenticado
+- `GET /api/orders/{orderNumber}` - Obtiene una orden específica (solo si le pertenece)
+
+#### Para administradores:
+- `GET /api/orders/all` - Obtiene todas las órdenes de todos los usuarios
+- `GET /api/orders/{orderNumber}` - Obtiene cualquier orden del sistema
+
+Las órdenes se guardan permanentemente en la base de datos y pueden consultarse en cualquier momento. Esto permite:
+- Dashboard de administración con últimas compras
+- Historial de compras del usuario
+- Generación de reportes y estadísticas
+- Seguimiento de ventas totales
+
+### Ejemplo de Request Simplificado
+
+El backend calcula automáticamente precios, subtotales y totales. La información del cliente se obtiene del JWT. Solo enviar:
 
 ```json
 {
   "order": {
-    "orderNumber": "ORD-1700768450123-456",
-    "timestamp": "2025-11-23T14:00:50Z",
-    "customerInfo": {
-      "firstName": "Manuel",
-      "lastName": "Dávila",
-      "email": "manuel.davila@email.com",
-      "phone": "+56912345678"
-    },
     "shippingAddress": {
       "address": "Avenida Libertador Bernardo O'Higgins 1564",
       "city": "Santiago",
@@ -180,25 +203,17 @@ La aplicación estará disponible en `http://localhost:8080`
     "items": [
       {
         "id": "GM001",
-        "name": "Catan",
-        "price": 34990,
         "quantity": 1
       },
       {
         "id": "GM002",
-        "name": "Dixit",
-        "price": 28990,
-        "quantity": 1
+        "quantity": 2
       }
     ],
-    "summary": {
-      "subtotal": 63980,
-      "shipping": 0,
-      "total": 63980
-    },
+    "shipping": 0,
     "payment": {
       "cardNumber": "1234567890123456",
-      "cardName": "MANUEL DAVILA",
+      "cardName": "USUARIO DUOC",
       "cardExpiry": "12/28",
       "cardCVV": "123"
     }
@@ -206,86 +221,82 @@ La aplicación estará disponible en `http://localhost:8080`
 }
 ```
 
-### Validaciones de Orden
+### Campos Calculados Automáticamente
 
-- Token JWT debe estar vigente
-- Productos deben existir en la base de datos
-- Debe haber stock suficiente para cada producto
-- Los precios deben coincidir con los de la base de datos
-- El subtotal debe ser la suma de (precio * cantidad) de cada item
-- El total debe ser subtotal + shipping
+- `orderNumber`: Generado automáticamente con formato `ORD-{timestamp}-{uuid}`
+- `timestamp`: Fecha y hora actual del servidor
+- `customerInfo` (firstName, lastName, email, phone): Obtenido del usuario autenticado vía JWT
+- `price` (por item): Obtenido de la base de datos (precio actual)
+- `name` (por item): Obtenido de la base de datos
+- `subtotal`: Suma de (precio × cantidad) de todos los items
+- `total`: subtotal + shipping
 
-### Errores Comunes
+### Ejemplo de Response
 
-- `401 Unauthorized` - Token inválido o expirado
-- `404 Not Found` - Producto no encontrado
-- `400 Bad Request` - Stock insuficiente, precio incorrecto, o total no coincide
+```json
+{
+  "orderNumber": "ORD-1700768450123-A1B2C3D4",
+  "timestamp": "2025-11-23T14:00:50.123",
+  "status": "COMPLETADA",
+  "message": "Orden creada exitosamente",
+  "customerInfo": {
+    "firstName": "Usuario",
+    "lastName": "Duoc",
+    "email": "usuario@duoc.cl",
+    "phone": "+56912345678"
+  },
+  "shippingAddress": {
+    "address": "Avenida Libertador Bernardo O'Higgins 1564",
+    "city": "Santiago",
+    "state": "Región Metropolitana",
+    "zipCode": "8320000"
+  },
+  "items": [
+    {
+      "id": "GM001",
+      "name": "Catan",
+      "price": 34990,
+      "quantity": 1,
+      "subtotal": 34990
+    },
+    {
+      "id": "GM002",
+      "name": "Dixit",
+      "price": 28990,
+      "quantity": 2,
+      "subtotal": 57980
+    }
+  ],
+  "summary": {
+    "subtotal": 92970,
+    "shipping": 0,
+    "total": 92970
+  }
+}
+```
 
-## Estructura de Datos
+### Manejo de Errores
 
-### Categorías de Productos
+#### Stock Insuficiente (400 Bad Request)
+```json
+{
+  "message": "Stock insuficiente para el producto: Catan. Disponible: 5, Solicitado: 10",
+  "statusCode": 400
+}
+```
 
-- Juego de Mesa
-- Periférico Gamer
-- Consola
+#### Producto No Encontrado (404 Not Found)
+```json
+{
+  "message": "Producto no encontrado con id: GM999",
+  "statusCode": 404
+}
+```
 
-### Stock de Productos
-
-Cada producto tiene un stock asociado que se actualiza automáticamente al procesar órdenes. Los productos se inicializan con cantidades entre 10 y 20 unidades.
-
-### Roles de Usuario
-
-- `ROLE_USER` - Acceso básico a endpoints protegidos y puede realizar compras
-- `ROLE_ADMIN` - Acceso completo, incluyendo operaciones CRUD
-
-## Documentación API
-
-- OpenAPI Specification: `src/main/resources/openapi.yaml`
-- Postman Collection: `GamerStoreBack.postman_collection.json`
-
-### Importar Colección Postman
-
-1. Abrir Postman
-2. Import > File > Seleccionar `GamerStoreBack.postman_collection.json`
-3. Configurar variable `base_url` (por defecto: `http://localhost:8080`)
-4. Ejecutar endpoint "Login - Admin" para obtener token automáticamente
-
-## Consideraciones Importantes
-
-### URLs con Espacios
-
-Las categorías y etiquetas con espacios deben codificarse en URLs:
-- Correcto: `/api/products/category/Juego%20de%20Mesa`
-- Incorrecto: `/api/products/category/Juego de Mesa`
-
-Postman codifica automáticamente. En navegadores o clientes HTTP, usar `encodeURIComponent()`.
-
-### Seguridad
-
-- JWT configurado para expirar en 24 horas (configurable)
-- Contraseñas encriptadas con BCrypt
-- CORS configurado para orígenes específicos
-- Endpoints públicos: productos y blog (lectura)
-- Endpoints protegidos: gestión de usuarios, contenido y órdenes de compra
-
-### Datos Iniciales
-
-La aplicación carga automáticamente:
-- 2 usuarios (admin y usuario regular)
-- 31 productos con stock (juegos de mesa, periféricos, consolas)
-- 11 artículos de blog con etiquetas
-- Stock inicial entre 10-20 unidades por producto
-
-## Troubleshooting
-
-### Error de Conexión a Base de Datos
-
-Verificar variables de entorno y que MySQL esté ejecutándose.
-
-### Error "sql_require_primary_key"
-
-Ejecutar en MySQL: `SET GLOBAL sql_require_primary_key = 0;`
-
-### Stock Insuficiente
-
-El sistema valida automáticamente el stock disponible. Si el error persiste, verificar que los datos se hayan cargado correctamente.
+#### Sin Autenticación (401 Unauthorized)
+```json
+{
+  "message": "Error de autenticación",
+  "statusCode": 401
+}
+```

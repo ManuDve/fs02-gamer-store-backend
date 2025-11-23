@@ -1,5 +1,11 @@
 package cl.maotech.gamerstoreback.dto;
 
+import cl.maotech.gamerstoreback.constant.Messages;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequestDto {
+    @NotNull(message = Messages.Validation.ORDER_NULL)
+    @Valid
     private OrderData order;
 
     @Getter
@@ -19,24 +27,22 @@ public class OrderRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderData {
-        private String orderNumber;
-        private String timestamp;
-        private CustomerInfo customerInfo;
+        @NotNull(message = Messages.Validation.SHIPPING_ADDRESS_REQUIRED)
+        @Valid
         private ShippingAddress shippingAddress;
-        private List<OrderItemDto> items;
-        private OrderSummary summary;
-        private PaymentInfo payment;
-    }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CustomerInfo {
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String phone;
+        @NotNull(message = Messages.Validation.ITEMS_REQUIRED)
+        @NotEmpty(message = Messages.Validation.ITEMS_NOT_EMPTY)
+        @Valid
+        private List<OrderItemDto> items;
+
+        @NotNull(message = Messages.Validation.PAYMENT_REQUIRED)
+        @Valid
+        private PaymentInfo payment;
+
+        @NotNull(message = Messages.Validation.SHIPPING_COST_REQUIRED)
+        @Min(value = 0, message = Messages.Validation.SHIPPING_COST_NEGATIVE)
+        private Integer shipping;
     }
 
     @Getter
@@ -44,9 +50,16 @@ public class OrderRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ShippingAddress {
+        @NotBlank(message = Messages.Validation.ADDRESS_REQUIRED)
         private String address;
+
+        @NotBlank(message = Messages.Validation.CITY_REQUIRED)
         private String city;
+
+        @NotBlank(message = Messages.Validation.STATE_REQUIRED)
         private String state;
+
+        @NotBlank(message = Messages.Validation.ZIP_CODE_REQUIRED)
         private String zipCode;
     }
 
@@ -55,9 +68,11 @@ public class OrderRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderItemDto {
+        @NotBlank(message = Messages.Validation.PRODUCT_ID_REQUIRED)
         private String id;
-        private String name;
-        private Integer price;
+
+        @NotNull(message = Messages.Validation.QUANTITY_REQUIRED)
+        @Min(value = 1, message = Messages.Validation.QUANTITY_MIN)
         private Integer quantity;
     }
 
@@ -65,21 +80,17 @@ public class OrderRequestDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class OrderSummary {
-        private Integer subtotal;
-        private Integer shipping;
-        private Integer total;
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class PaymentInfo {
+        @NotBlank(message = Messages.Validation.CARD_NUMBER_REQUIRED)
         private String cardNumber;
+
+        @NotBlank(message = Messages.Validation.CARD_NAME_REQUIRED)
         private String cardName;
+
+        @NotBlank(message = Messages.Validation.CARD_EXPIRY_REQUIRED)
         private String cardExpiry;
+
+        @NotBlank(message = Messages.Validation.CARD_CVV_REQUIRED)
         private String cardCVV;
     }
 }
-

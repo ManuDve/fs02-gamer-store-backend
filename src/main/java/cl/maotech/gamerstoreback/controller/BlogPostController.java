@@ -1,6 +1,7 @@
 package cl.maotech.gamerstoreback.controller;
 
 import cl.maotech.gamerstoreback.constant.BlogPostEndpoints;
+import cl.maotech.gamerstoreback.constant.Messages;
 import cl.maotech.gamerstoreback.dto.BlogPostResponseDto;
 import cl.maotech.gamerstoreback.dto.MessageResponse;
 import cl.maotech.gamerstoreback.model.BlogPost;
@@ -53,7 +54,6 @@ public class BlogPostController {
     @DeleteMapping(BlogPostEndpoints.ID)
     public ResponseEntity<MessageResponse> deleteBlogPost(@PathVariable String id) {
         blogPostService.deleteBlogPost(id);
-        return ResponseEntity.ok(new MessageResponse("Blog post eliminado exitosamente", HttpStatus.OK.value()));
+        return ResponseEntity.ok(new MessageResponse(Messages.BlogPost.DELETED, HttpStatus.OK.value()));
     }
 }
-

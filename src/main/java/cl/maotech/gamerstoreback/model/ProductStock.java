@@ -1,6 +1,6 @@
-
 package cl.maotech.gamerstoreback.model;
 
+import cl.maotech.gamerstoreback.constant.Messages;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -26,9 +26,8 @@ public class ProductStock {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @NotNull(message = "La cantidad es requerida")
-    @Min(value = 0, message = "La cantidad no puede ser negativa")
-    @Column(nullable = false)
+    @NotNull(message = Messages.Validation.STOCK_QUANTITY_REQUIRED)
+    @Min(value = 0, message = Messages.Validation.STOCK_QUANTITY_NEGATIVE)
     private Integer quantity;
 }
 

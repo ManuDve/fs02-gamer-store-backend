@@ -93,7 +93,7 @@ INSERT INTO blog_post_tags (blog_post_id, tag) VALUES
 -- ==========================================
 
 -- Insert Products
-INSERT INTO products (id, category, name, price, img, descripcion, reseña) VALUES
+INSERT INTO products (id, category, name, price, img, description, review) VALUES
 ('GM001', 'Juego de Mesa', 'Catan', 34990, 'https://tse2.mm.bing.net/th/id/OIP.Ygd6ZQ679UJMABllYf--_gHaHa?rs=1&pid=ImgDetMain&o=7&rm=3', 'Juego de estrategia de comercio y construcción de civilizaciones en la isla de Catan.', 'Un clásico moderno, esencial para cualquier colección. ¡Perfecto para noches de estrategia!'),
 ('GM002', 'Juego de Mesa', 'Dixit', 28990, 'https://cf.geekdo-images.com/original/img/m74nctbYaqTy03r8s_i_KTyvbYQ=/0x0/pic3483909.jpg', 'Juego de cartas narrativo y de imaginación, donde se adivinan conceptos a través de ilustraciones surrealistas.', 'Excelente para fiestas. Despierta la creatividad y la interpretación de imágenes. ¡Arte bellísimo!'),
 ('GM003', 'Juego de Mesa', 'Ticket to Ride: Europa', 43990, 'https://67287.cdn.simplo7.net/static/67287/sku/jogos-de-tabuleiro-e-cardgames-ticket-to-ride-europa--p-1621519111305.jpg', 'Aventura ferroviaria para coleccionar y conectar rutas de tren a través de Europa.', 'Ideal para la familia. Reglas sencillas y alta rejugabilidad.'),
