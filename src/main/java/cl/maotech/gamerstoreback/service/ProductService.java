@@ -5,6 +5,8 @@ import cl.maotech.gamerstoreback.dto.ProductResponseDto;
 import cl.maotech.gamerstoreback.exception.ResourceNotFoundException;
 import cl.maotech.gamerstoreback.mapper.ProductMapper;
 import cl.maotech.gamerstoreback.model.Product;
+import cl.maotech.gamerstoreback.model.ProductStock;
+import cl.maotech.gamerstoreback.model.ProductCharacteristic;
 import cl.maotech.gamerstoreback.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -60,10 +62,48 @@ public class ProductService {
         existingProduct.setImg(product.getImg());
         existingProduct.setDescription(product.getDescription());
         existingProduct.setReview(product.getReview());
-        existingProduct.setCharacteristics(product.getCharacteristics());
 
+        // MODIFICADO: Actualizar stock correctamente
         if (product.getStock() != null) {
-            existingProduct.setStock(product.getStock());
+            if (existingProduct.getStock() != null) {
+                // Actualizar quantity de la entidad existente
+                existingProduct.getStock().setQuantity(product.getStock().getQuantity());
+            } else {
+                // Crear nueva entidad stock si no existe
+                ProductStock newStock = new ProductStock();
+                newStock.setProductId(id);
+                newStock.setProduct(existingProduct);
+                newStock.setQuantity(product.getStock().getQuantity());
+                existingProduct.setStock(newStock);
+            }
+        }
+
+        // MODIFICADO: Actualizar características correctamente
+        if (product.getCharacteristics() != null) {
+            if (existingProduct.getCharacteristics() != null) {
+                // Actualizar campos de la entidad existente
+                ProductCharacteristic existing = existingProduct.getCharacteristics();
+                ProductCharacteristic incoming = product.getCharacteristics();
+
+                existing.setJugadores(incoming.getJugadores());
+                existing.setEdadMinima(incoming.getEdadMinima());
+                existing.setTiempoJuego(incoming.getTiempoJuego());
+                existing.setTipoSwitch(incoming.getTipoSwitch());
+                existing.setIluminacion(incoming.getIluminacion());
+                existing.setConexion(incoming.getConexion());
+                existing.setSensor(incoming.getSensor());
+                existing.setPeso(incoming.getPeso());
+                existing.setSonido(incoming.getSonido());
+                existing.setCompatibilidad(incoming.getCompatibilidad());
+                existing.setDimensiones(incoming.getDimensiones());
+                existing.setMaterial(incoming.getMaterial());
+                existing.setResolucion(incoming.getResolucion());
+            } else {
+                // Crear nueva entidad characteristics si no existe
+                ProductCharacteristic newCharacteristics = product.getCharacteristics();
+                newCharacteristics.setProduct(existingProduct);
+                existingProduct.setCharacteristics(newCharacteristics);
+            }
         }
 
         Product updatedProduct = productRepository.save(existingProduct);

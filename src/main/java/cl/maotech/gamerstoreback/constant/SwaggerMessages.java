@@ -125,6 +125,8 @@ public final class SwaggerMessages {
         public static final String CREATE_DESCRIPTION = "Asigna un nuevo rol a un usuario. Requiere rol ADMIN";
         public static final String DELETE_SUMMARY = "Eliminar autoridad";
         public static final String DELETE_DESCRIPTION = "Elimina un rol de un usuario. Requiere rol ADMIN";
+        public static final String UPDATE_SUMMARY = "Actualizar autoridad";
+        public static final String UPDATE_DESCRIPTION = "Actualiza el rol de un usuario. Requiere rol ADMIN";
         public static final String ID_PARAM_DESCRIPTION = "ID de la autoridad";
         public static final String ID_PARAM_EXAMPLE = "1";
 
