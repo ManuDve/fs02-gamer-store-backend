@@ -60,8 +60,8 @@ apt install git -y
 
 ```bash
 cd /opt
-git clone https://github.com/manudve/fs02-gamer-store-backend.git gamer-store-back
-cd gamer-store-back
+git clone https://github.com/manudve/fs02-gamer-store-backend.git
+cd fs02-gamer-store-backend
 ```
 
 ### 7. Crear archivo de variables de entorno
