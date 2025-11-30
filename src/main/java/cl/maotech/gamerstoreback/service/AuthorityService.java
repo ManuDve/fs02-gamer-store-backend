@@ -75,5 +75,27 @@ public class AuthorityService {
                 .orElseThrow(() -> new ResourceNotFoundException(Messages.Authority.NOT_FOUND + id));
         authorityRepository.delete(authority);
     }
+
+    @Transactional
+    public AuthorityResponseDto updateUserRole(Long userId, String newRole) {
+        // 1. Verificar que el usuario existe
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(Messages.Authority.USER_NOT_FOUND + userId));
+
+        // 2. ELIMINAR todos los roles antiguos del usuario
+        authorityRepository.deleteByUserId(userId);
+        authorityRepository.flush(); // ← IMPORTANTE: fuerza el DELETE inmediatamente
+
+        // 3. Crear el nuevo rol (solo UNO)
+        Authority newAuthority = new Authority();
+        newAuthority.setUser(user);
+        newAuthority.setAuthority(newRole); // ROLE_USER o ROLE_ADMIN
+
+        // 4. Guardar el nuevo rol
+        Authority savedAuthority = authorityRepository.save(newAuthority);
+        authorityRepository.flush(); // ← Asegura que se guarde inmediatamente
+
+        return AuthorityMapper.toResponseDto(savedAuthority);
+    }
 }
 

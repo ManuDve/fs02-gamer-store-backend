@@ -132,4 +132,28 @@ public class AuthorityController {
         response.put("message", Messages.Authority.DELETED);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(
+            summary = SwaggerMessages.Authority.UPDATE_SUMMARY,
+            description = SwaggerMessages.Authority.UPDATE_DESCRIPTION,
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = SwaggerMessages.Response.SUCCESS_200),
+            @ApiResponse(responseCode = "400", description = SwaggerMessages.Response.BAD_REQUEST_400),
+            @ApiResponse(responseCode = "401", description = SwaggerMessages.Response.UNAUTHORIZED_401),
+            @ApiResponse(responseCode = "403", description = SwaggerMessages.Response.FORBIDDEN_403),
+            @ApiResponse(responseCode = "404", description = SwaggerMessages.Response.NOT_FOUND_404)
+    })
+    @PutMapping("/user/{userId}/role")
+    public ResponseEntity<AuthorityResponseDto> updateUserRole(
+            @Parameter(description = "ID del usuario", example = "1") @PathVariable Long userId,
+            @Parameter(description = "Nuevo rol (ROLE_USER o ROLE_ADMIN)", example = "ROLE_ADMIN") @RequestParam String role) {
+
+        if (!role.equals("ROLE_USER") && !role.equals("ROLE_ADMIN")) {
+            throw new IllegalArgumentException("El rol debe ser ROLE_USER o ROLE_ADMIN");
+        }
+
+        AuthorityResponseDto authority = authorityService.updateUserRole(userId, role);
+        return ResponseEntity.ok(authority);
+    }
 }
