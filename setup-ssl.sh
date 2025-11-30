@@ -30,9 +30,15 @@ fi
 
 echo "Certificados SSL creados exitosamente"
 
-# 5. Copiar configuración de Nginx
+# 5. Copiar configuración de Nginx desde el directorio correcto
 echo "Configurando Nginx..."
-cp nginx-gamer-store.conf /etc/nginx/sites-available/gamer-store
+if [ -f /opt/fs02-gamer-store-backend/nginx-gamer-store.conf ]; then
+    cp /opt/fs02-gamer-store-backend/nginx-gamer-store.conf /etc/nginx/sites-available/gamer-store
+else
+    echo "ERROR: No se encuentra el archivo nginx-gamer-store.conf"
+    echo "Asegúrate de estar en /opt/fs02-gamer-store-backend"
+    exit 1
+fi
 
 # 6. Habilitar el sitio
 ln -s /etc/nginx/sites-available/gamer-store /etc/nginx/sites-enabled/
@@ -125,4 +131,3 @@ server {
     server_name 66.135.22.150;
     return 301 https://$server_name$request_uri;
 }
-

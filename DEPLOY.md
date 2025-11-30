@@ -173,7 +173,7 @@ certbot --nginx -d tu-dominio.com -d www.tu-dominio.com
 ## Actualizar la Aplicación
 
 ```bash
-cd /opt/gamer-store-back
+cd /opt/fs02-gamer-store-backend
 git pull
 export $(cat .env | xargs)
 ./deploy.sh
