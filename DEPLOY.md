@@ -6,6 +6,7 @@
 - Ubuntu 22.04 LTS (recomendado)
 - Acceso SSH al servidor
 - Variables de entorno configuradas
+- IP del servidor: **66.135.22.150**
 
 ## Variables de Entorno Necesarias
 
@@ -22,7 +23,7 @@ Asegúrate de tener estos valores:
 ### 1. Conectar al servidor Vultr
 
 ```bash
-ssh root@TU_IP_DE_VULTR
+ssh root@66.135.22.150
 ```
 
 ### 2. Actualizar el sistema
@@ -59,7 +60,7 @@ apt install git -y
 
 ```bash
 cd /opt
-git clone TU_REPOSITORIO gamer-store-back
+git clone https://github.com/manudve/fs02-gamer-store-backend.git gamer-store-back
 cd gamer-store-back
 ```
 
@@ -138,7 +139,7 @@ Agregar:
 ```nginx
 server {
     listen 80;
-    server_name tu-dominio.com www.tu-dominio.com;
+    server_name 66.135.22.150;
 
     location / {
         proxy_pass http://localhost:8080;
@@ -221,6 +222,152 @@ El Dockerfile ya está optimizado con:
 
 ## Troubleshooting
 
+### Blocked Mixed Content (IMPORTANTE para GitHub Pages)
+
+Si tu frontend en GitHub Pages (HTTPS) no puede conectarse al backend y aparece el error `blocked:mixed-content`, necesitas configurar HTTPS en tu servidor Vultr. Los navegadores modernos bloquean peticiones HTTP desde sitios HTTPS.
+
+**Solución: Configurar Nginx + SSL (OBLIGATORIO)**
+
+#### Paso 1: Instalar Nginx
+
+```bash
+apt install nginx -y
+```
+
+#### Paso 2: Crear configuración básica
+
+```bash
+nano /etc/nginx/sites-available/gamer-store
+```
+
+Agregar esta configuración inicial:
+
+```nginx
+server {
+    listen 80;
+    server_name 66.135.22.150;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        
+        # CORS headers (por si acaso)
+        add_header 'Access-Control-Allow-Origin' 'https://manudve.github.io' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+        
+        if ($request_method = 'OPTIONS') {
+            return 204;
+        }
+    }
+}
+```
+
+#### Paso 3: Habilitar sitio
+
+```bash
+ln -s /etc/nginx/sites-available/gamer-store /etc/nginx/sites-enabled/
+nginx -t
+systemctl restart nginx
+```
+
+#### Paso 4: Configurar SSL con Certbot
+
+**Si tienes un dominio:**
+
+```bash
+apt install certbot python3-certbot-nginx -y
+certbot --nginx -d tu-dominio.com
+```
+
+**Si SOLO tienes IP (sin dominio):**
+
+No puedes usar Let's Encrypt con una IP. Tienes 2 opciones:
+
+**Opción A: Usar un dominio gratuito**
+1. Registra un dominio gratuito en [FreeDNS](https://freedns.afraid.org/) o [No-IP](https://www.noip.com/)
+2. Apunta el dominio a tu IP de Vultr
+3. Usa Certbot con ese dominio
+
+**Opción B: Certificado autofirmado (solo para desarrollo)**
+
+```bash
+# Generar certificado autofirmado
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/nginx-selfsigned.key \
+  -out /etc/ssl/certs/nginx-selfsigned.crt \
+  -subj "/C=CL/ST=Santiago/L=Santiago/O=GamerStore/CN=66.135.22.150"
+
+# Actualizar configuración de Nginx
+nano /etc/nginx/sites-available/gamer-store
+```
+
+Modificar el archivo:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name 66.135.22.150;
+
+    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+    
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+server {
+    listen 80;
+    server_name 66.135.22.150;
+    return 301 https://$server_name$request_uri;
+}
+```
+
+```bash
+nginx -t
+systemctl restart nginx
+```
+
+**NOTA:** Con certificado autofirmado verás una advertencia en el navegador. Debes aceptarla manualmente.
+
+#### Paso 5: Abrir puerto HTTPS en firewall
+
+```bash
+ufw allow 443/tcp
+ufw reload
+```
+
+#### Paso 6: Actualizar la URL en tu frontend
+
+Cambia la URL de tu API en el frontend de:
+```javascript
+http://66.135.22.150:8080
+```
+
+a:
+```javascript
+https://66.135.22.150
+```
+
 ### La aplicación no inicia
 ```bash
 docker logs gamer-store-back
@@ -245,9 +392,11 @@ echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
 
 ## Endpoints Importantes
 
-- API: `http://tu-ip:8080/api`
-- Swagger: `http://tu-ip:8080/swagger-ui/index.html`
-- Health: `http://tu-ip:8080/actuator/health` (si está habilitado)
+- API: `http://66.135.22.150:8080/api` (temporal, cambiará a HTTPS)
+- API con HTTPS: `https://66.135.22.150/api` (después de configurar SSL)
+- Swagger: `http://66.135.22.150:8080/swagger-ui/index.html`
+- Swagger con HTTPS: `https://66.135.22.150/swagger-ui/index.html`
+- Health: `http://66.135.22.150:8080/actuator/health` (si está habilitado)
 
 ## Seguridad
 
