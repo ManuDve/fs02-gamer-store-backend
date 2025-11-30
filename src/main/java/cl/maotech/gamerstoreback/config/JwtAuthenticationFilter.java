@@ -2,6 +2,7 @@ package cl.maotech.gamerstoreback.config;
 
 import cl.maotech.gamerstoreback.service.CustomUserDetailsService;
 import cl.maotech.gamerstoreback.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+            try {
+                username = jwtUtil.extractUsername(jwt);
+            } catch (ExpiredJwtException e) {
+                // Token expirado - dejar que Spring Security maneje endpoints públicos
+                // No hacer nada, continuar con el filtro
+            } catch (Exception e) {
+                // Token inválido - dejar que Spring Security lo rechace si es necesario
+            }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -51,4 +59,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-
