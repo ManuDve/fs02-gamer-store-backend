@@ -1,13 +1,13 @@
-# 📦 Guía de Despliegue en Vultr (VC2-1c-1gb)
+# Guía de Despliegue en Vultr (VC2-1c-1gb)
 
-## 📋 Requisitos Previos
+## Requisitos Previos
 
 - Servidor Vultr VC2-1c-1gb (1 vCPU, 1GB RAM)
 - Ubuntu 22.04 LTS (recomendado)
 - Acceso SSH al servidor
 - Variables de entorno configuradas
 
-## 🔧 Variables de Entorno Necesarias
+## Variables de Entorno Necesarias
 
 Asegúrate de tener estos valores:
 - `DB_USER`: Usuario de la base de datos
@@ -17,21 +17,21 @@ Asegúrate de tener estos valores:
 - `JWT_EXPIRATION`: Tiempo de expiración del token (ejemplo: 86400000 para 24 horas)
 - `CORS_ALLOWED_ORIGINS`: Orígenes permitidos separados por comas
 
-## 🚀 Pasos de Despliegue
+## Pasos de Despliegue
 
-### 1️⃣ Conectar al servidor Vultr
+### 1. Conectar al servidor Vultr
 
 ```bash
 ssh root@TU_IP_DE_VULTR
 ```
 
-### 2️⃣ Actualizar el sistema
+### 2. Actualizar el sistema
 
 ```bash
 apt update && apt upgrade -y
 ```
 
-### 3️⃣ Instalar Docker
+### 3. Instalar Docker
 
 ```bash
 # Instalar Docker
@@ -42,20 +42,20 @@ sh get-docker.sh
 docker --version
 ```
 
-### 4️⃣ Instalar Docker Compose (opcional)
+### 4. Instalar Docker Compose (opcional)
 
 ```bash
 apt install docker-compose -y
 docker-compose --version
 ```
 
-### 5️⃣ Instalar Git
+### 5. Instalar Git
 
 ```bash
 apt install git -y
 ```
 
-### 6️⃣ Clonar el repositorio
+### 6. Clonar el repositorio
 
 ```bash
 cd /opt
@@ -63,7 +63,7 @@ git clone TU_REPOSITORIO gamer-store-back
 cd gamer-store-back
 ```
 
-### 7️⃣ Crear archivo de variables de entorno
+### 7. Crear archivo de variables de entorno
 
 ```bash
 nano .env
@@ -77,18 +77,18 @@ DB_PASS=tu_contraseña
 DB_URL=tu-host:puerto
 JWT_SECRET=tu_secret_muy_seguro_y_largo_minimo_256_bits
 JWT_EXPIRATION=86400000
-CORS_ALLOWED_ORIGINS=https://tu-dominio.com,https://www.tu-dominio.com
+CORS_ALLOWED_ORIGINS=https://manudve.github.io
 ```
 
 Guardar con `CTRL+O`, `ENTER`, salir con `CTRL+X`
 
-### 8️⃣ Dar permisos de ejecución al script
+### 8. Dar permisos de ejecución al script
 
 ```bash
 chmod +x deploy.sh
 ```
 
-### 9️⃣ Cargar variables de entorno y desplegar
+### 9. Cargar variables de entorno y desplegar
 
 **Opción A: Usando el script de despliegue**
 
@@ -106,7 +106,7 @@ export $(cat .env | xargs)
 docker-compose up -d --build
 ```
 
-### 🔟 Verificar que la aplicación está corriendo
+### 10. Verificar que la aplicación está corriendo
 
 ```bash
 # Ver logs
@@ -119,7 +119,7 @@ docker ps
 curl http://localhost:8080/swagger-ui/index.html
 ```
 
-## 🌐 Configurar Nginx como Reverse Proxy (Recomendado)
+## Configurar Nginx como Reverse Proxy (Recomendado)
 
 ### 1. Instalar Nginx
 
@@ -169,7 +169,7 @@ apt install certbot python3-certbot-nginx -y
 certbot --nginx -d tu-dominio.com -d www.tu-dominio.com
 ```
 
-## 🔄 Actualizar la Aplicación
+## Actualizar la Aplicación
 
 ```bash
 cd /opt/gamer-store-back
@@ -178,7 +178,7 @@ export $(cat .env | xargs)
 ./deploy.sh
 ```
 
-## 📊 Comandos Útiles
+## Comandos Útiles
 
 ```bash
 # Ver logs en tiempo real
@@ -200,7 +200,7 @@ docker exec -it gamer-store-back sh
 docker image prune -a
 ```
 
-## 🔥 Firewall (UFW)
+## Firewall (UFW)
 
 ```bash
 # Habilitar firewall
@@ -211,7 +211,7 @@ ufw enable
 ufw status
 ```
 
-## 💾 Optimización para 1GB RAM
+## Optimización para 1GB RAM
 
 El Dockerfile ya está optimizado con:
 - `-Xmx512m`: Máximo 512MB de heap
@@ -219,7 +219,7 @@ El Dockerfile ya está optimizado con:
 - Imagen JRE Alpine (más liviana)
 - Pool de conexiones limitado a 10
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### La aplicación no inicia
 ```bash
@@ -243,13 +243,13 @@ swapon /swapfile
 echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
 ```
 
-## 📱 Endpoints Importantes
+## Endpoints Importantes
 
 - API: `http://tu-ip:8080/api`
 - Swagger: `http://tu-ip:8080/swagger-ui/index.html`
 - Health: `http://tu-ip:8080/actuator/health` (si está habilitado)
 
-## 🔒 Seguridad
+## Seguridad
 
 1. Cambia el puerto SSH por defecto
 2. Usa autenticación por llave SSH
@@ -260,24 +260,4 @@ echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
 
 ---
 
-¡Tu aplicación debería estar corriendo ahora! 🎉
-# Etapa de construcción
-FROM maven:3.9-eclipse-temurin-17-alpine AS build
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Etapa de ejecución
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-
-# Crear usuario no privilegiado
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
-
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "-Xmx512m", "-Xms256m", "app.jar"]
-
+¡Tu aplicación debería estar corriendo ahora!
